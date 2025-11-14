@@ -14,7 +14,7 @@ public class InviteEmployee {
     private String name;
 
     @Column(name = "trang_thai")
-    private Boolean status;
+    private Boolean status = true;
 
     public Long getId() {
         return id;

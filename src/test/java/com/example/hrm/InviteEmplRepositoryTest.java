@@ -21,9 +21,19 @@ public class InviteEmplRepositoryTest {
     private InviteEmpRepository inviteEmpRepository;
 
     @Test
-    public void testFindByNameAccount(){
+    public void testFindByEmail(){
         String email = "nguyenngocthien200403@gmail.com";
         Optional<InviteEmployee> findResult = inviteEmpRepository.findByEmail(email);
         assertThat(findResult).isPresent();
+    }
+
+    @Test
+    public void testCreate(){
+        InviteEmployee inviteEmployee = new InviteEmployee();
+        inviteEmployee.setEmail("nguyenvana@gmail.com");
+        inviteEmployee.setName("Nguyen Van A");
+
+
+        assertThat(inviteEmpRepository.save(inviteEmployee));
     }
 }

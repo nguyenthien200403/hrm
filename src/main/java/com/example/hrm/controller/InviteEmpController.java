@@ -42,9 +42,7 @@ public class InviteEmpController {
             return ResponseEntity.status(response.getStatus()).body(response);
         }
 
-        GeneralResponse <?> response2 = testService.create(test);
-
-
+        GeneralResponse <?> response2 = testService.create(test, email);
         // xử lý cập nhật thông tin
         return ResponseEntity.status(response2.getStatus()).body(response2);
     }
