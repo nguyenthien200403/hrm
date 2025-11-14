@@ -28,11 +28,11 @@ public class AccountService {
 //        if(nameAccount.isEmpty()){
 //            return new GeneralResponse<>(HttpStatus.BAD_REQUEST,"Invalid Param Name Account","Account", null);
 //        }
-//        Optional<Account> findResult = accountRepository.findByNameAcount(nameAccount);
+//        Optional<Account> findResult = accountRepository.findByNameAccount(nameAccount);
 //        if(findResult.isPresent()){
 //            Account account = findResult.get();
 //            return new GeneralResponse<>(HttpStatus.OK, "Success", "Account", account);
 //        }
-//        return new GeneralResponse<>(HttpStatus.BAD_REQUEST,"No Find Account with Name Account","Account", null);
+//        return new GeneralResponse<>(HttpStatus.BAD_REQUEST,"No Account","Account", null);
 //    }
 }
