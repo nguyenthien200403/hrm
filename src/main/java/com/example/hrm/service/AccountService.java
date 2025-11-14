@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class AccountService {
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     public GeneralResponse<List<Account>> getAllAccount(){
         List<Account> list = accountRepository.findAll();
