@@ -2,6 +2,7 @@ package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.model.InviteEmployee;
+import com.example.hrm.model.Test;
 import com.example.hrm.repository.InviteEmpRepository;
 import com.example.hrm.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,16 @@ public class InviteEmpService {
         }
         return new GeneralResponse<>(HttpStatus.BAD_REQUEST,"No Email","InviteEmployee", null);
     }
+
+    public GeneralResponse<?> createInvite(InviteEmployee inviteEmployee){
+        try {
+            InviteEmployee newInvite = inviteEmpRepository.save(inviteEmployee);
+
+            return new GeneralResponse<>(HttpStatus.OK, "Success Create","Invite", newInvite);
+        }catch (Exception e){
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST, e.getMessage()," Invite", null);
+        }
+    }
+
 
 }
