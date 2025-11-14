@@ -3,7 +3,7 @@ package com.example.hrm.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "XacNhanEmail")
+@Table(name = "TuyenDung")
 public class InviteEmployee {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
