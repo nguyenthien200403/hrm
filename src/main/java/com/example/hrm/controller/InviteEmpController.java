@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/invite")
+@RequestMapping("/invitation")
 public class InviteEmpController {
     @Autowired
     private InviteEmpService inviteEmpService;
