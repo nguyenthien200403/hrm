@@ -36,6 +36,7 @@ public class InviteEmpController {
         String token = authHeader.replace("Bearer ", "");
         Claims claims = jwtUtil.extractClaims(token);
 
+
         String email = claims.getSubject();
         GeneralResponse<?> response = inviteEmpService.checkEmail(email);
         if(response.getStatus() !=  HttpStatus.OK){
