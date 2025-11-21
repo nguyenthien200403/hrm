@@ -2,17 +2,25 @@ package com.example.hrm.model;
 
 import jakarta.persistence.*;
 
+
+import java.time.LocalDate;
+import java.util.Date;
+
 @Entity
-@Table(name = "TuyenDung")
-public class InviteEmployee {
+@Table(name="TuyenDung")
+public class Recruitment {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "ten")
+    @Column(name = "ho_ten")
     private String name;
 
+    @Column(name = "ngay_tao")
+    private LocalDate date;
     @Column(name = "trang_thai")
     private Boolean status = true;
 
@@ -40,11 +48,30 @@ public class InviteEmployee {
         this.name = name;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     public Boolean getStatus() {
         return status;
     }
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Recruitment{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", status=" + status +
+                '}';
     }
 }
