@@ -16,7 +16,7 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping("/employee")
+    @PostMapping("/employee/fill-info")
     public ResponseEntity<?> create(@Valid @RequestBody EmployeeDTO dto){
         String email = "";
         GeneralResponse<?> response = employeeService.create(dto, email);
