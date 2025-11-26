@@ -2,15 +2,15 @@ package com.example.hrm.model;
 
 import jakarta.persistence.*;
 
-
 import java.time.LocalDate;
-import java.util.Date;
+
 
 @Entity
 @Table(name="TuyenDung")
 public class Recruitment {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tuyen_dung")
     private Long id;
 
     @Column(name = "email", unique = true)
@@ -20,9 +20,13 @@ public class Recruitment {
     private String name;
 
     @Column(name = "ngay_tao")
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
+
     @Column(name = "trang_thai")
     private Boolean status = true;
+
+    @Column(name = "id_chuc_nang")
+    private int idFunction = 3;
 
     public Long getId() {
         return id;
@@ -64,14 +68,11 @@ public class Recruitment {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "Recruitment{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", status=" + status +
-                '}';
+    public int getIdFunction() {
+        return idFunction;
+    }
+
+    public void setIdFunction(int idFunction) {
+        this.idFunction = idFunction;
     }
 }

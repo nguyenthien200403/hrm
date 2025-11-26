@@ -9,7 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import org.springframework.test.annotation.Rollback;
 
-import java.time.LocalDate;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +27,8 @@ public class RecruitmentTest {
     @Test
     public void createTest(){
         Recruitment recruitment = new Recruitment();
-        recruitment.setEmail("buiminhphuc@gmail.com");
-        recruitment.setName("Bùi Minh Phúc");
-        recruitment.setDate(LocalDate.now());
+        recruitment.setEmail("nguyenngocthien200403@gmail.com");
+        recruitment.setName("Nguyễn Ngọc Thiện");
 
         assertThat(recruitmentRepository.save(recruitment));
     }

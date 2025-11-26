@@ -18,8 +18,8 @@ public class EmployeeController {
 
     @PostMapping("/employee")
     public ResponseEntity<?> create(@Valid @RequestBody EmployeeDTO dto){
-        String email = "";
-        GeneralResponse<?> response = employeeService.create(dto, email);
+//        String email = "";
+        GeneralResponse<?> response = employeeService.create(dto);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
