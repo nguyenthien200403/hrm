@@ -70,7 +70,7 @@ public class EmployeeService {
         return null;
     }
     
-    public GeneralResponse<?> create(EmployeeDTO dto, String email){
+    public GeneralResponse<?> create(EmployeeDTO dto){
         try{
             String id = generalId(dto.getIdentification());
             GeneralResponse<?> check = checkDataInput(dto, id);
@@ -81,7 +81,7 @@ public class EmployeeService {
             Employee employee = convertToEmployee(dto, id);
             employeeRepository.save(employee);
 
-            recruitmentService.update(email);
+            //recruitmentService.update(email);
 
             return new GeneralResponse<>(HttpStatus.OK.value(),"Success", employee);
         }catch (DataIntegrityViolationException e){

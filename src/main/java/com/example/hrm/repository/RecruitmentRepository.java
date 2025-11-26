@@ -18,8 +18,4 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
     @Query("UPDATE Recruitment  SET status = :status WHERE email = :email")
     int updateByEmail(@Param("email") String email, @Param("status") Boolean status);
 
-
-
-
-
 }
