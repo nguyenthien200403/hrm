@@ -5,6 +5,7 @@ import com.example.hrm.dto.EmployeeDTO;
 import com.example.hrm.model.Employee;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.EmployeeRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +20,14 @@ import java.util.Optional;
 
 
 @Service
+@RequiredArgsConstructor
 public class EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
-    @Autowired
-    private RecruitmentService recruitmentService;
-    
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final RecruitmentService recruitmentService;
+
+    private final EmployeeRepository employeeRepository;
 
     public GeneralResponse<?> getEmployeeByID(String id){
         Optional <Employee> findResult = employeeRepository.findById(id);
@@ -70,7 +70,7 @@ public class EmployeeService {
         return null;
     }
     
-    public GeneralResponse<?> create(EmployeeDTO dto){
+    public GeneralResponse<?> create(EmployeeDTO dto, String email){
         try{
             String id = generalId(dto.getIdentification());
             GeneralResponse<?> check = checkDataInput(dto, id);
@@ -81,7 +81,7 @@ public class EmployeeService {
             Employee employee = convertToEmployee(dto, id);
             employeeRepository.save(employee);
 
-            //recruitmentService.update(email);
+            recruitmentService.update(email);
 
             return new GeneralResponse<>(HttpStatus.OK.value(),"Success", employee);
         }catch (DataIntegrityViolationException e){

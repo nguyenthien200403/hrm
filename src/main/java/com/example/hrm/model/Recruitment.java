@@ -1,10 +1,11 @@
 package com.example.hrm.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-
+@Data
 @Entity
 @Table(name="TuyenDung")
 public class Recruitment {
@@ -27,52 +28,4 @@ public class Recruitment {
 
     @Column(name = "id_chuc_nang")
     private int idFunction = 3;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-
-    public int getIdFunction() {
-        return idFunction;
-    }
-
-    public void setIdFunction(int idFunction) {
-        this.idFunction = idFunction;
-    }
 }

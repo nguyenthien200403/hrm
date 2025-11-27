@@ -34,7 +34,7 @@ public class RecruitmentService {
             if(!recruitment.getStatus()){
                 return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Blocked",null);
             }
-            return new GeneralResponse<>(HttpStatus.OK.value(), "Access Token", recruitment);
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Recruitment", recruitment);
         }
         return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Email Not Found", null);
     }
@@ -51,8 +51,10 @@ public class RecruitmentService {
             recruitment.setEmail(dto.getEmail());
             recruitment.setName(dto.getName());
             recruitment.setDate(LocalDate.now());
+
             recruitmentRepository.save(recruitment);
             return new GeneralResponse<>(HttpStatus.OK.value(),"Success", recruitment);
+
         }catch (DataIntegrityViolationException e){
             return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Email existed",null);
         }catch (Exception e) {
