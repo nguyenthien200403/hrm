@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
     Optional<Recruitment> findByEmail(@Param("email") String email);
 
     @Modifying
+    @Transactional
     @Query("UPDATE Recruitment  SET status = :status WHERE email = :email")
     int updateByEmail(@Param("email") String email, @Param("status") Boolean status);
 

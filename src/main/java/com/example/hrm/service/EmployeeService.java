@@ -1,22 +1,30 @@
 package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.dto.BankDTO;
 import com.example.hrm.dto.EmployeeDTO;
+import com.example.hrm.dto.RelativeDTO;
+import com.example.hrm.model.Bank;
 import com.example.hrm.model.Employee;
+import com.example.hrm.model.Relatives;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.EmployeeRepository;
+import com.example.hrm.repository.RecruitmentRepository;
+import com.example.hrm.request.EmployeeRequest;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -25,15 +33,15 @@ public class EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
-    private final RecruitmentService recruitmentService;
+    private final RecruitmentRepository recruitmentRepository;
 
     private final EmployeeRepository employeeRepository;
 
     public GeneralResponse<?> getEmployeeByID(String id){
         Optional <Employee> findResult = employeeRepository.findById(id);
         if(findResult.isPresent()){
-            Employee employee = findResult.get();
-            return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee", employee);
+            EmployeeDTO employeeDTO = new EmployeeDTO(findResult.get());
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee", employeeDTO);
         }
         return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Not Found Id", null);
     }
@@ -53,63 +61,108 @@ public class EmployeeService {
         
         return last4Digits + timestamp;
     }
-    public GeneralResponse<?> checkDataInput(EmployeeDTO dto, String id){
+
+    public GeneralResponse<?> checkDataInput(EmployeeRequest request, String id){
         int status = HttpStatus.CONFLICT.value();
         if(employeeRepository.existById(id)){
             return new GeneralResponse<>(status, "Existed Id", null);
         }
-        if(employeeRepository.existsByEmail(dto.getEmail())){
+        if(employeeRepository.existsByEmail(request.getEmail())){
             return new GeneralResponse<>(status, "Existed Email", null);
         }
-        if (employeeRepository.existsByPhone(dto.getPhone())){
+        if (employeeRepository.existsByPhone(request.getPhone())){
             return new GeneralResponse<>(status, "Existed Phone", null);
         }
-        if (employeeRepository.existsByIdentification(dto.getIdentification())){
+        if (employeeRepository.existsByIdentification(request.getIdentification())){
             return new GeneralResponse<>(status, "Existed Identification", null);
         }
         return null;
     }
     
-    public GeneralResponse<?> create(EmployeeDTO dto, String email){
+    public GeneralResponse<?> create(EmployeeRequest request, String email){
         try{
-            String id = generalId(dto.getIdentification());
-            GeneralResponse<?> check = checkDataInput(dto, id);
+            String id = generalId(request.getIdentification());
+            GeneralResponse<?> check = checkDataInput(request, id);
+
             if(check != null){
                 return check;
             }
 
-            Employee employee = convertToEmployee(dto, id);
+            update(email);
+
+            Employee employee = convertToEmployee(request, id);
             employeeRepository.save(employee);
+            EmployeeDTO dto = new EmployeeDTO(employee);
 
-            recruitmentService.update(email);
 
-            return new GeneralResponse<>(HttpStatus.OK.value(),"Success", employee);
+            return new GeneralResponse<>(HttpStatus.CREATED.value(),"Success", dto);
         }catch (DataIntegrityViolationException e){
-            return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Existed data",null);
+            return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Existed data", e.getMessage());
         }catch (Exception e) {
             logger.error("Error when create employee: ", e);
-            return new GeneralResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Error occurred",null);
+            return new GeneralResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),"Error occurred",e.getMessage());
         }
-
     }
 
-    private static Employee convertToEmployee(EmployeeDTO dto, String id) {
+    @Transactional
+    public void update(String email) {
+        int updated = recruitmentRepository.updateByEmail(email, false);
+        if (updated > 0) {
+            logger.info("Recruitment updated successfully for email {}", email);
+        } else {
+            logger.warn("No recruitment found with email {}", email);
+        }
+    }
+
+
+
+    private static Employee convertToEmployee(EmployeeRequest request, String id) {
         Employee employee = new Employee();
         employee.setId(id);
-        employee.setName(dto.getName());
-        employee.setGender(dto.getGender());
-        employee.setEmail(dto.getEmail());
-        employee.setBirthDate(dto.getBirthDate());
-        employee.setPhone(dto.getPhone());
-        employee.setNation(dto.getNation());
-        employee.setEthnic(dto.getEthnic());
-        employee.setIdentification(dto.getIdentification());
-        employee.setIssueDate(dto.getIssueDate());
-        employee.setIssuePlace(dto.getIssuePlace());
-        employee.setTempAddress(dto.getTempAddress());
-        employee.setPermanent(dto.getPermanent());
-        employee.setHabit(dto.getHabit());
-        employee.setStatusMarital(dto.getStatusMarital());
+        employee.setName(request.getName());
+        employee.setGender(request.getGender());
+        employee.setEmail(request.getEmail());
+        employee.setBirthDate(request.getBirthDate());
+        employee.setPhone(request.getPhone());
+        employee.setNation(request.getNation());
+        employee.setEthnic(request.getEthnic());
+        employee.setIdentification(request.getIdentification());
+        employee.setIssueDate(request.getIssueDate());
+        employee.setIssuePlace(request.getIssuePlace());
+        employee.setTempAddress(request.getTempAddress());
+        employee.setPermanent(request.getPermanent());
+        employee.setHabit(request.getHabit());
+        employee.setStatusMarital(request.getStatusMarital());
+        employee.setRelatives(mapRelatives(request.getRelatives(), employee));
+        employee.setBank(requestBank(request.getBank(), employee));
         return employee;
     }
+
+    private static List<Relatives> mapRelatives(List<RelativeDTO> relativeDTOS, Employee employee) {
+        return relativeDTOS.stream()
+                .map(r -> {
+                    Relatives relative = new Relatives();
+                    relative.setName(r.getName());
+                    relative.setRelation(r.getRelation());
+                    relative.setDateOfBirth(r.getDateOfBirth());
+                    relative.setGender(r.getGender());
+                    relative.setPhone(r.getPhone());
+                    relative.setEmployee(employee);
+                    return relative;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private static Bank requestBank(BankDTO dto, Employee employee){
+        Bank bank = new Bank();
+        bank.setNameBank(dto.getNameBank());
+        bank.setAgent(dto.getAgent());
+        bank.setNameAccountBank(dto.getNameAccountBank());
+        bank.setNumberAccountBank(dto.getNameAccountBank());
+        bank.setProvince(dto.getProvince());
+        bank.setNumberRout(dto.getNumberRout());
+        bank.setEmployee(employee);
+        return bank;
+    }
+
 }

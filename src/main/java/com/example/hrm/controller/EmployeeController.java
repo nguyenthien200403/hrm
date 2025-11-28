@@ -1,24 +1,24 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
-import com.example.hrm.dto.EmployeeDTO;
-import com.example.hrm.dto.RecruitmentDTO;
+import com.example.hrm.request.EmployeeRequest;
 import com.example.hrm.service.EmployeeService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
 
-    @PostMapping("/employee")
-    public ResponseEntity<?> create(@Valid @RequestBody EmployeeDTO dto, @RequestParam String email){
-        GeneralResponse<?> response = employeeService.create(dto, email);
+    private final EmployeeService employeeService ;
+
+    @PostMapping("/employee/fill-info/{id}")
+    public ResponseEntity<?> create(@Valid @RequestBody EmployeeRequest request, @PathVariable String id){
+        GeneralResponse<?> response = employeeService.create(request, id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

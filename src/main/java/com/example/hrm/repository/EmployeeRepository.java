@@ -1,11 +1,12 @@
 package com.example.hrm.repository;
 
-import com.example.hrm.dto.EmployeeDTO;
 import com.example.hrm.model.Employee;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 
 import java.util.List;
 
@@ -26,7 +27,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     List<com.example.hrm.projection.EmployeeProjection> findAllByStatus(String status);
 
-    Optional<Employee> findById(String id);
+
+    @NonNull
+    Optional<Employee> findById(@NonNull String id);
+
 
     @Modifying
     @Query("UPDATE Employee SET status = :status, idDepart = :idDepart WHERE id = :id")

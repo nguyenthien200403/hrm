@@ -1,4 +1,4 @@
-package com.example.hrm.dto;
+package com.example.hrm.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

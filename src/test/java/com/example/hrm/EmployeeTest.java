@@ -1,21 +1,11 @@
 package com.example.hrm;
 
-import com.example.hrm.config.GeneralResponse;
-import com.example.hrm.dto.EmployeeDTO;
-import com.example.hrm.model.Employee;
 import com.example.hrm.repository.EmployeeRepository;
-import com.example.hrm.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
-
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

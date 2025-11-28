@@ -1,59 +1,58 @@
 package com.example.hrm.dto;
 
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import com.example.hrm.model.Employee;
 import lombok.Data;
 
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class EmployeeDTO {
-
-    @NotBlank(message = "NOT NULL")
+    private String id;
     private String name;
-
-    @NotNull(message = "NOT NULL")
     private Boolean gender;
-
-    @NotNull(message = "NOT NULL")
     private LocalDate birthDate;
-
-    @NotBlank(message = "NOT NULL")
-    @Email(message = "Email is not in the correct format")
     private String email;
-
-    @NotBlank(message = "NOT NULL")
     private String nation;
-
-    @NotBlank(message = "NOT NULL")
     private String ethnic;
-
-    @NotBlank(message = "NOT NULL")
-    @Pattern(regexp = "\\d{10}", message = "LENGTH 10")
     private String phone;
-
-    @NotBlank(message = "NOT NULL")
-    @Pattern(regexp = "\\d{12}", message = "LENGTH 12")
     private String identification;
-
-    @NotBlank(message = "NOT NULL")
     private String issuePlace;
-
-    @NotNull(message = "NOT NULL")
     private LocalDate issueDate;
-
-    @NotBlank(message = "NOT NULL")
     private String tempAddress;
-
-    @NotBlank(message = "NOT NULL")
     private String permanent ;
-
-
     private String habit;
-
-    @NotBlank(message = "NOT NULL")
     private String statusMarital;
+    private BigDecimal salary;
+    private String idDepart;
+    private List<RelativeDTO> relatives;
+    private BankDTO bank;
+
+    public EmployeeDTO(Employee employee) {
+        this.id = employee.getId();
+        this.name = employee.getName();
+        this.email = employee.getEmail();
+        this.birthDate = employee.getBirthDate();
+        this.phone = employee.getPhone();
+        this.gender = employee.getGender();
+        this.identification = employee.getIdentification();
+        this.issueDate = employee.getIssueDate();
+        this.issuePlace = employee.getIssuePlace();
+        this.nation = employee.getNation();
+        this.ethnic = employee.getEthnic();
+        this.habit = employee.getHabit();
+        this.permanent = employee.getPermanent();
+        this.tempAddress = employee.getTempAddress();
+        this.statusMarital = employee.getStatusMarital();
+        this.salary = employee.getSalary();
+        this.idDepart = employee.getIdDepart();
+        this.relatives = employee.getRelatives() != null
+                ? employee.getRelatives().stream().map(RelativeDTO::new).collect(Collectors.toList())
+                : new ArrayList<>();
+        this.bank = employee.getBank() != null ? new BankDTO(employee.getBank()) : null;
+    }
 }

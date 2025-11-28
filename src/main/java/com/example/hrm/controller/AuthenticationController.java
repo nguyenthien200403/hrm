@@ -1,8 +1,7 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
-import com.example.hrm.dto.AccountDTO;
-import com.example.hrm.dto.AuthRequest;
+import com.example.hrm.request.AuthRequest;
 import com.example.hrm.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

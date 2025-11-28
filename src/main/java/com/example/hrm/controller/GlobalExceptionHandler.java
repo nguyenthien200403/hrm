@@ -1,21 +1,16 @@
 package com.example.hrm.controller;
 
 
-
-
 import com.example.hrm.config.ErrorResponse;
-import jakarta.persistence.Entity;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import org.springframework.jmx.export.metadata.ManagedOperation;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,9 +44,12 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_ERROR",
                 LocalDateTime.now(),
-                List.of(Map.of("error", ex.getMessage()))
-        );
+                List.of(  Map.of("message", ex.getMessage()),
+                        Map.of("cause", ex.getCause() != null ? ex.getCause().toString() : "null"),
+                        Map.of("stack", Arrays.toString(ex.getStackTrace()))
+                )
 
+        );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
