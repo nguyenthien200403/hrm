@@ -51,7 +51,7 @@ public class RecruitmentTest {
     @Test
     public void updateByEmailSuccessTest(){
         Boolean status = false;
-        String email = "nguyenngocthien200403@gmail.com";
+        String email = "nguyenngoc@gmail.com";
         int updated = recruitmentRepository.updateByEmail(email, status);
         assertThat(updated);
     }

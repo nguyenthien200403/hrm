@@ -1,14 +1,15 @@
 package com.example.hrm.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
+@ToString(exclude = {"relatives", "bank"})
 @Entity
 @Table(name = "NhanVien")
 public class Employee {
@@ -59,12 +60,18 @@ public class Employee {
     private String statusMarital;
 
     @Column(name = "muc_luong")
-    private String salary;
+    private BigDecimal salary;
 
     @Column(name = "trang_thai")// 0:nghỉ việc - 1:hoạt động - 2:đang đợi duyệt - 3:từ chối
     private String status = "2";
 
     @Column(name = "id_phong_ban")
     private String idDepart;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Relatives> relatives;
+
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Bank bank;
 }
 
