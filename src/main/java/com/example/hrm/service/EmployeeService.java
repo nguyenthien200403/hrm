@@ -79,7 +79,7 @@ public class EmployeeService {
         return null;
     }
     
-    public GeneralResponse<?> create(EmployeeRequest request, String email){
+    public GeneralResponse<?> create(EmployeeRequest request){
         try{
             String id = generalId(request.getIdentification());
             GeneralResponse<?> check = checkDataInput(request, id);
@@ -88,7 +88,7 @@ public class EmployeeService {
                 return check;
             }
 
-            update(email);
+            update(request.getEmailRecruit());
 
             Employee employee = convertToEmployee(request, id);
             employeeRepository.save(employee);
@@ -134,7 +134,7 @@ public class EmployeeService {
         employee.setHabit(request.getHabit());
         employee.setStatusMarital(request.getStatusMarital());
         employee.setRelatives(mapRelatives(request.getRelatives(), employee));
-        employee.setBank(requestBank(request.getBank(), employee));
+        employee.setBank(mapBank(request.getBank(), employee));
         return employee;
     }
 
@@ -153,7 +153,7 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    private static Bank requestBank(BankDTO dto, Employee employee){
+    private static Bank mapBank(BankDTO dto, Employee employee){
         Bank bank = new Bank();
         bank.setNameBank(dto.getNameBank());
         bank.setAgent(dto.getAgent());

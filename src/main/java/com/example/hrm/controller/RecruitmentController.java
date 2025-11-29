@@ -7,7 +7,6 @@ import com.example.hrm.service.RecruitmentService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,13 +19,13 @@ public class RecruitmentController {
 
     private final RecruitmentService recruitmentService;
 
-    @PostMapping("/email-verify")
+    @PostMapping("/confirmations")
     public ResponseEntity<?> verifyEmail(@RequestParam String email){
         GeneralResponse<?> response = recruitmentService.verifyEmail(email);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PostMapping("/admin/recruitment")
+    @PostMapping("/admin/recruitments")
     public ResponseEntity<?> create(@Valid @RequestBody RecruitmentRequest request){
         GeneralResponse<?> response = recruitmentService.create(request);
         return  ResponseEntity.status(response.getStatus()).body(response);

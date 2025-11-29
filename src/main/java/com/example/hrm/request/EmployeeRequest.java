@@ -2,10 +2,7 @@ package com.example.hrm.request;
 
 import com.example.hrm.dto.BankDTO;
 import com.example.hrm.dto.RelativeDTO;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -14,8 +11,8 @@ import java.util.List;
 @Data
 public class EmployeeRequest {
 
-//    @NotBlank(message = "Not Null")
-//    private String emailRecruit;
+    @NotBlank(message = "Not Null")
+    private String emailRecruit;
 
     @NotBlank(message = "NOT NULL")
     private String name;
@@ -61,8 +58,10 @@ public class EmployeeRequest {
     @NotBlank(message = "NOT NULL")
     private String statusMarital;
 
+    @NotEmpty(message = "Danh sách người thân không được để trống")
     private List<RelativeDTO> relatives;
 
+    @NotNull(message = "Thông tin ngân hàng không được để trống")
     private BankDTO bank;
 
 }

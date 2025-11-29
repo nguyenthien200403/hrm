@@ -26,11 +26,11 @@ public class SecurityConfiguration {
             .csrf(AbstractHttpConfigurer::disable)
              .authorizeHttpRequests(auth -> auth
                  // Public endpoints
-                 .requestMatchers("/login","/employee/fill-info/**","/email-verify", "/admin/employees/new", "/admin/employee/detail").permitAll()
+                 .requestMatchers("/authentications","/individuals","/confirmations", "/admin/**").permitAll()
 
                  // Role-based endpoints
-                 .requestMatchers("/admin/recruitment").hasRole("admin")
-                 .requestMatchers("/auth/admin/**").hasRole("employee")
+//                 .requestMatchers("/admin/recruitment").hasRole("admin")
+//                 .requestMatchers("/auth/admin/**").hasRole("employee")
 
                  // All other endpoints require authentication
                  .anyRequest().authenticated()

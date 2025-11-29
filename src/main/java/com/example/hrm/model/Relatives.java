@@ -2,12 +2,10 @@ package com.example.hrm.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Data
-@ToString(exclude = "employee")
 @Entity
 @Table(name = "NguoiThan")
 public class Relatives {

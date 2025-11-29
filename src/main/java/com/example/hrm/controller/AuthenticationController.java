@@ -1,7 +1,8 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
-import com.example.hrm.request.AuthRequest;
+import com.example.hrm.request.AuthenticationRequest;
+import com.example.hrm.request.RegisterRequest;
 import com.example.hrm.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,16 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest){
-        GeneralResponse<?> response = service.authenticate(authRequest);
+    @PostMapping("/authentications")
+    public ResponseEntity<?> authenticate(@Valid @RequestBody AuthenticationRequest request){
+        GeneralResponse<?> response = service.authenticate(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<?> login(@Valid @RequestBody AccountDTO dto){
-//        //
-//    }
+    @PostMapping("/admin/registrations")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request){
+        GeneralResponse<?> response = service.register(request);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }

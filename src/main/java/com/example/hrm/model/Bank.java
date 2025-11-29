@@ -2,10 +2,9 @@ package com.example.hrm.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
+
 
 @Data
-@ToString(exclude = "employee")
 @Entity
 @Table(name = "NganHang")
 public class Bank {
