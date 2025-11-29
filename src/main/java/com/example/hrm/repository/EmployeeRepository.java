@@ -33,8 +33,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Optional<Employee> findById(@NonNull String id);
 
 
-    @Modifying
-    @Query("UPDATE Employee SET status = :status, idDepart = :idDepart WHERE id = :id")
-    int updateById(@Param("status") String status, @Param("idDepart") String idDepart, String id);
+
 
 }
