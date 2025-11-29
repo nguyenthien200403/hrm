@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class AuthRequest {
+public class RegisterRequest {
     @NotBlank(message = "Not Null")
-    private String nameAccount;
+    private String idEmployee;
 
     @NotBlank(message = "Not Null")
-    private String password;
+    private String nameRole;
 }

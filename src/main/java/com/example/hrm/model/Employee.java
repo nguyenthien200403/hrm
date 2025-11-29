@@ -2,14 +2,12 @@ package com.example.hrm.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@ToString(exclude = {"relatives", "bank"})
 @Entity
 @Table(name = "NhanVien")
 public class Employee {
@@ -60,7 +58,7 @@ public class Employee {
     private String statusMarital;
 
     @Column(name = "muc_luong")
-    private BigDecimal salary;
+    private BigDecimal wage;
 
     @Column(name = "trang_thai")// 0:nghỉ việc - 1:hoạt động - 2:đang đợi duyệt - 3:từ chối
     private String status = "2";
