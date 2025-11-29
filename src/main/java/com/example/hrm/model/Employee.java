@@ -63,8 +63,9 @@ public class Employee {
     @Column(name = "trang_thai")// 0:nghỉ việc - 1:hoạt động - 2:đang đợi duyệt - 3:từ chối
     private String status = "2";
 
-    @Column(name = "id_phong_ban")
-    private String idDepart;
+    @ManyToOne
+    @JoinColumn(name = "id_phong_ban")
+    private Department department;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Relatives> relatives;

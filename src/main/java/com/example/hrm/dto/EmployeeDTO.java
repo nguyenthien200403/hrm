@@ -28,7 +28,7 @@ public class EmployeeDTO {
     private String habit;
     private String statusMarital;
     private BigDecimal wage;
-    private String idDepart;
+    private String nameDepart;
     private List<RelativeDTO> relatives;
     private BankDTO bank;
 
@@ -49,7 +49,7 @@ public class EmployeeDTO {
         this.tempAddress = employee.getTempAddress();
         this.statusMarital = employee.getStatusMarital();
         this.wage = employee.getWage();
-        this.idDepart = employee.getIdDepart();
+        this.nameDepart = employee.getDepartment() != null ? employee.getDepartment().getName() : null;
         this.relatives = employee.getRelatives() != null
                 ? employee.getRelatives().stream().map(RelativeDTO::new).collect(Collectors.toList())
                 : new ArrayList<>();
