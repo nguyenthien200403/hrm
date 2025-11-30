@@ -28,6 +28,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     List<EmployeeProjection> findAllByStatus(String status);
 
+    @Query("SELECT COUNT(e) FROM Employee e WHERE e.status = :status")
+    long countEmpByStatus(@Param("status") String status);
+
 
     @NonNull
     Optional<Employee> findById(@NonNull String id);

@@ -6,9 +6,9 @@ import com.example.hrm.repository.TypeContractRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import java.lang.reflect.Type;
+
+
 import java.util.List;
 import java.util.Optional;
 

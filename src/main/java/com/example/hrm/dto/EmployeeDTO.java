@@ -44,12 +44,12 @@ public class EmployeeDTO {
         this.issuePlace = employee.getIssuePlace();
         this.nation = employee.getNation();
         this.ethnic = employee.getEthnic();
-        this.habit = employee.getHabit();
+        this.habit = employee.getHabit() != null ? employee.getHabit() : "";
         this.permanent = employee.getPermanent();
         this.tempAddress = employee.getTempAddress();
         this.statusMarital = employee.getStatusMarital();
-        this.wage = employee.getWage();
-        this.nameDepart = employee.getDepartment() != null ? employee.getDepartment().getName() : null;
+        this.wage = employee.getWage() != null ? employee.getWage() : BigDecimal.valueOf(0);
+        this.nameDepart = employee.getDepartment() != null ? employee.getDepartment().getName() : "";
         this.relatives = employee.getRelatives() != null
                 ? employee.getRelatives().stream().map(RelativeDTO::new).collect(Collectors.toList())
                 : new ArrayList<>();

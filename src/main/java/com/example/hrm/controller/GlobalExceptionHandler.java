@@ -45,8 +45,7 @@ public class GlobalExceptionHandler {
                 "INTERNAL_ERROR",
                 LocalDateTime.now(),
                 List.of(  Map.of("message", ex.getMessage()),
-                        Map.of("cause", ex.getCause() != null ? ex.getCause().toString() : "null"),
-                        Map.of("stack", Arrays.toString(ex.getStackTrace()))
+                        Map.of("cause", ex.getCause() != null ? ex.getCause().toString() : "null")
                 )
 
         );

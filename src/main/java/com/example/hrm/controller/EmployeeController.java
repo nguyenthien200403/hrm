@@ -21,21 +21,39 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/admin/employees-new")
+    @GetMapping("/admin/employees-processing")
     public ResponseEntity<?> showAllByStatusProcessing(){
-        GeneralResponse<?> response = employeeService.getAllByStatus("2");
+        GeneralResponse<?> response = employeeService.getAllByStatus("2", "List Processing Employee");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/employees-resigned")
     public ResponseEntity<?> showAllByStatusResigned(){
-        GeneralResponse<?> response = employeeService.getAllByStatus("0");
+        GeneralResponse<?> response = employeeService.getAllByStatus("0" , "List Resigned Employee");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/employees/{id}")
     public ResponseEntity<?> showDetailByID(@PathVariable String id){
         GeneralResponse<?> response = employeeService.getEmployeeByID(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PutMapping("/admin/verification/{id}")
+    public ResponseEntity<?> verifyEmployee(@PathVariable String id, @RequestParam String nameDepart){
+        GeneralResponse<?> response = employeeService.verifyEmployee(id, nameDepart);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/admin/employees/amount-active")
+    public ResponseEntity<?> amountEmployeeActive(){
+        GeneralResponse<?> response = employeeService.amountEmployeeActive("1", "Amount Employee Active");
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/admin/employees/amount-processing")
+    public ResponseEntity<?> amountEmployeeProcessing(){
+        GeneralResponse<?> response = employeeService.amountEmployeeActive("2", "Amount Employee Processing");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }
