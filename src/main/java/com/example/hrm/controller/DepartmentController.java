@@ -32,4 +32,10 @@ public class DepartmentController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/admin/departments/name")
+    public ResponseEntity<?> getAllByName(){
+        GeneralResponse<?> response = departmentService.getAllByName();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 }

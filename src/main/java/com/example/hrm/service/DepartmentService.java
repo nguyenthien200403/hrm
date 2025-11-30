@@ -3,6 +3,7 @@ package com.example.hrm.service;
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.DepartmentDTO;
 import com.example.hrm.model.Department;
+import com.example.hrm.projection.DepartmentProjection;
 import com.example.hrm.repository.DepartmentRepository;
 import com.example.hrm.request.DepartmentRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,15 @@ public class DepartmentService {
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
-        return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Departments", list);
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Departments", list);
+    }
+
+    public GeneralResponse<?> getAllByName(){
+        List<DepartmentProjection> list = departmentRepository.findAllByName();
+        if(list.isEmpty()) {
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Departments Name", list);
     }
 
     public GeneralResponse<?> create(DepartmentRequest request){
@@ -53,11 +62,16 @@ public class DepartmentService {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found id", null );
         }
 
+        if(departmentRepository.existsByNameAndIdNot(name, id)){
+            return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Existed Name", null );
+        }
+
         Department department = findResult.get();
         department.setName(name);
         department.setDescribe(describe);
 
         departmentRepository.save(department);
-        return new GeneralResponse<>(HttpStatus.NO_CONTENT.value(), "Success", null);
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Success", null);
     }
+
 }

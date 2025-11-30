@@ -5,9 +5,11 @@ import com.example.hrm.dto.BankDTO;
 import com.example.hrm.dto.EmployeeDTO;
 import com.example.hrm.dto.RelativeDTO;
 import com.example.hrm.model.Bank;
+import com.example.hrm.model.Department;
 import com.example.hrm.model.Employee;
 import com.example.hrm.model.Relatives;
 import com.example.hrm.projection.EmployeeProjection;
+import com.example.hrm.repository.DepartmentRepository;
 import com.example.hrm.repository.EmployeeRepository;
 import com.example.hrm.repository.RecruitmentRepository;
 import com.example.hrm.request.EmployeeRequest;
@@ -32,13 +34,13 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
-
     private final RecruitmentRepository recruitmentRepository;
-
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
+
 
     public GeneralResponse<?> getEmployeeByID(String id){
-        Optional <Employee> findResult = employeeRepository.findById(id);
+        Optional<Employee> findResult = employeeRepository.findById(id);
         if(findResult.isPresent()){
             EmployeeDTO employeeDTO = new EmployeeDTO(findResult.get());
             return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee", employeeDTO);
@@ -46,12 +48,12 @@ public class EmployeeService {
         return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Not Found Id", null);
     }
 
-    public GeneralResponse<?> getAllByStatus(String status){
+    public GeneralResponse<?> getAllByStatus(String status, String message){
         List<EmployeeProjection> employees = employeeRepository.findAllByStatus(status);
         if(employees.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.NO_CONTENT.value(), "No data", null);
+            return new GeneralResponse<>(HttpStatus.OK.value(), "No data", null);
         }
-        return new GeneralResponse<>(HttpStatus.OK.value(),"List employee-new", employees);
+        return new GeneralResponse<>(HttpStatus.OK.value(), message, employees);
 
     }
 
@@ -64,6 +66,7 @@ public class EmployeeService {
 
     public GeneralResponse<?> checkDataInput(EmployeeRequest request, String id){
         int status = HttpStatus.CONFLICT.value();
+
         if(employeeRepository.existById(id)){
             return new GeneralResponse<>(status, "Existed Id", null);
         }
@@ -105,7 +108,8 @@ public class EmployeeService {
     }
 
     @Transactional
-    public void update(String email) {
+    private
+    void update(String email) {
         int updated = recruitmentRepository.updateByEmail(email, false);
         if (updated > 0) {
             logger.info("Recruitment updated successfully for email {}", email);
@@ -163,6 +167,33 @@ public class EmployeeService {
         bank.setNumberRout(dto.getNumberRout());
         bank.setEmployee(employee);
         return bank;
+    }
+
+
+    public GeneralResponse<?> verifyEmployee(String id, String nameDepart){
+
+        Optional<Employee> findResult = employeeRepository.findById(id);
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee Id", null);
+        }
+
+        Department department = departmentRepository.findByName(nameDepart);
+        if(department == null){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Department Name", null);
+        }
+
+        Employee employee = findResult.get();
+        employee.setStatus("1");
+        employee.setDepartment(department);
+
+        employeeRepository.save(employee);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Success", null);
+    }
+
+    public GeneralResponse<?> amountEmployeeActive(String status, String message){
+        long amount = employeeRepository.countEmpByStatus(status);
+        return new GeneralResponse<>(HttpStatus.OK.value(), message, amount);
     }
 
 }

@@ -13,13 +13,19 @@ import java.util.Optional;
 
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, String> {
-//    List<DepartmentProjection>
+
+    @Query("SELECT d.name AS name FROM Department d")
+    List<DepartmentProjection> findAllByName();
 
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Department d " +
             "WHERE d.id = :id OR d.name = :name")
     boolean existsByIdOrName(@Param("id") String id, @Param("name") String name);
 
+    boolean existsByNameAndIdNot(String name, String id);
+
     @Nonnull
     Optional<Department> findById(@Nonnull String id);
+
+    Department findByName(String name);
 }
