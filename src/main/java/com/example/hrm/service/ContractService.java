@@ -40,7 +40,7 @@ public class ContractService {
         Optional<TypeContract> findT = typeContractRepository.findByName(request.getNameTypeContract());
 
         if(findEmp.isEmpty() || findT.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Not Found: {Employee or Contract Type}", null);
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found: {Employee or Contract Type}", null);
         }
 
         Employee employee = findEmp.get();

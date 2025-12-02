@@ -31,11 +31,11 @@ public class RecruitmentService {
         if(findResult.isPresent()){
             Recruitment recruitment = findResult.get();
             if(!recruitment.getStatus()){
-                return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Blocked",null);
+                return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Email Not Found",null);
             }
-            return new GeneralResponse<>(HttpStatus.OK.value(), "Recruitment", recruitment);
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Verification Success", recruitment);
         }
-        return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Email Not Found", null);
+        return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Email", null);
     }
 
 

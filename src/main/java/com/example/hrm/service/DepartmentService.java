@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class DepartmentService {
+
     private final DepartmentRepository departmentRepository;
 
     public GeneralResponse<?> getAll(){
@@ -53,7 +54,7 @@ public class DepartmentService {
 
         DepartmentDTO dto = new DepartmentDTO(department);
 
-        return new GeneralResponse<>(HttpStatus.OK.value(), "Success", dto);
+        return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", dto);
     }
 
     public GeneralResponse<?> update(String id, String name, String describe){

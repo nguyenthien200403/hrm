@@ -37,7 +37,8 @@ public class JwtService {
         claims.put("role",userDetails.getAuthorities());
 
         Account account = (Account) userDetails;
-        claims.put("idEmployee", account.getEmployee().getId());
+        claims.put("Id-Employee", account.getEmployee().getId());
+        claims.put("Name-Employee", account.getEmployee().getName());
         claims.put("firstLogin", account.getFirstLogin());
 
         return generateToken(claims, userDetails);
@@ -52,7 +53,7 @@ public class JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -75,7 +76,7 @@ public class JwtService {
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
