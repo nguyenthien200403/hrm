@@ -11,6 +11,7 @@ import com.example.hrm.model.Account;
 import com.example.hrm.repository.AccountRepository;
 import com.example.hrm.request.RegisterRequest;
 import com.example.hrm.security.JwtService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
@@ -41,13 +42,13 @@ public class AuthenticationService {
            );
            Optional<Account> findResult = accountRepository.findByNameAccount(request.getNameAccount());
            if(findResult.isEmpty()){
-               return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(),"Not Found Name Account", null);
+               return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Name Account", null);
            }
            Account account = findResult.get();
            String jwt = jwtService.generateToken(account);
            return new GeneralResponse<>(HttpStatus.OK.value(),"Access-Token", jwt);
        }catch (BadCredentialsException e){
-           return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(),"Either Name Account or Password is Error", null);
+           return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(),"Wrong: {Account Name or Password}", null);
        }catch (DisabledException | LockedException e){
            return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(),"Account is Blocked", null);
        }
@@ -58,7 +59,7 @@ public class AuthenticationService {
            Optional<Employee> findEmp = employeeRepository.findById(request.getIdEmployee());
            Optional<Role> findRole = roleRepository.findByNameRole(request.getNameRole());
            if(findEmp.isEmpty() || findRole.isEmpty()){
-               return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Not Found: {Role or Employee}", null);
+               return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found: {Role or Employee}", null);
            }
            Employee employee = findEmp.get();
            Role role = findRole.get();
@@ -77,5 +78,29 @@ public class AuthenticationService {
        } catch (Exception e) {
            throw new RuntimeException(e);
        }
+    }
+
+    public GeneralResponse<?> changeInfo(String token, String newName, String newPassword){
+
+        String oldName = jwtService.extractAccountName(token);
+
+        Optional<Account> findResult = accountRepository.findByNameAccount(oldName);
+
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Wrong Account Name ", null);
+        }
+
+        Account account = findResult.get();
+
+        if(accountRepository.existsByNameAccountAndIdNot(newName, account.getId())){
+            return new GeneralResponse<>(HttpStatus.CONFLICT.value(), "Exists Account Name ", null);
+        }
+
+        account.setNameAccount(newName);
+        account.setPassword(passwordEncoder.encode(newPassword));
+
+        accountRepository.save(account);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Account changed Successfully" , null);
     }
 }

@@ -47,13 +47,13 @@ public class EmployeeController {
 
     @GetMapping("/admin/employees/amount-active")
     public ResponseEntity<?> amountEmployeeActive(){
-        GeneralResponse<?> response = employeeService.amountEmployeeActive("1", "Amount Employee Active");
+        GeneralResponse<?> response = employeeService.amountEmployeeByStatus("1", "Amount Employee Active");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/admin/employees/amount-processing")
     public ResponseEntity<?> amountEmployeeProcessing(){
-        GeneralResponse<?> response = employeeService.amountEmployeeActive("2", "Amount Employee Processing");
+        GeneralResponse<?> response = employeeService.amountEmployeeByStatus("2", "Amount Employee Processing");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

@@ -27,5 +27,5 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
     @Nonnull
     Optional<Department> findById(@Nonnull String id);
 
-    Department findByName(String name);
+    Optional<Department> findByName(String name);
 }

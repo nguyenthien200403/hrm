@@ -45,13 +45,13 @@ public class EmployeeService {
             EmployeeDTO employeeDTO = new EmployeeDTO(findResult.get());
             return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee", employeeDTO);
         }
-        return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Not Found Id", null);
+        return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Id", null);
     }
 
     public GeneralResponse<?> getAllByStatus(String status, String message){
         List<EmployeeProjection> employees = employeeRepository.findAllByStatus(status);
         if(employees.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.OK.value(), "No data", null);
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
         return new GeneralResponse<>(HttpStatus.OK.value(), message, employees);
 
@@ -162,7 +162,7 @@ public class EmployeeService {
         bank.setNameBank(dto.getNameBank());
         bank.setAgent(dto.getAgent());
         bank.setNameAccountBank(dto.getNameAccountBank());
-        bank.setNumberAccountBank(dto.getNameAccountBank());
+        bank.setNumberAccountBank(dto.getNumberAccountBank());
         bank.setProvince(dto.getProvince());
         bank.setNumberRout(dto.getNumberRout());
         bank.setEmployee(employee);
@@ -172,26 +172,23 @@ public class EmployeeService {
 
     public GeneralResponse<?> verifyEmployee(String id, String nameDepart){
 
-        Optional<Employee> findResult = employeeRepository.findById(id);
-        if(findResult.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee Id", null);
+        Optional<Employee> findEmp = employeeRepository.findById(id);
+        Optional<Department> findDepart = departmentRepository.findByName(nameDepart);
+        if(findEmp.isEmpty() || findDepart.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found: {Employee or Department} ", null);
         }
 
-        Department department = departmentRepository.findByName(nameDepart);
-        if(department == null){
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Department Name", null);
-        }
 
-        Employee employee = findResult.get();
+        Employee employee = findEmp.get();
         employee.setStatus("1");
-        employee.setDepartment(department);
+        employee.setDepartment(findDepart.get());
 
         employeeRepository.save(employee);
 
         return new GeneralResponse<>(HttpStatus.OK.value(), "Success", null);
     }
 
-    public GeneralResponse<?> amountEmployeeActive(String status, String message){
+    public GeneralResponse<?> amountEmployeeByStatus(String status, String message){
         long amount = employeeRepository.countEmpByStatus(status);
         return new GeneralResponse<>(HttpStatus.OK.value(), message, amount);
     }
