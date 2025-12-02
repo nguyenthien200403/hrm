@@ -2,7 +2,7 @@ package com.example.hrm.controller;
 
 
 import com.example.hrm.config.GeneralResponse;
-import com.example.hrm.request.RecruitmentRequest;
+import com.example.hrm.dto.RecruitmentDTO;
 import com.example.hrm.service.RecruitmentService;
 
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class RecruitmentController {
     }
 
     @PostMapping("/admin/recruitments")
-    public ResponseEntity<?> create(@Valid @RequestBody RecruitmentRequest request){
+    public ResponseEntity<?> create(@Valid @RequestBody RecruitmentDTO request){
         GeneralResponse<?> response = recruitmentService.create(request);
         return  ResponseEntity.status(response.getStatus()).body(response);
     }

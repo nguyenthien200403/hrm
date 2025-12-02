@@ -45,10 +45,12 @@ public class DepartmentService {
             return new GeneralResponse<>(HttpStatus.CONFLICT.value(), "Existed: {Id or Name}", null);
         }
 
-        Department department = new Department();
-        department.setId(request.getId());
-        department.setName(request.getName());
-        department.setDescribe(request.getDescribe());
+        var department = Department.builder()
+                .id(request.getId())
+                .name(request.getName())
+                .describe(request.getDescribe())
+                .build();
+
 
         departmentRepository.save(department);
 

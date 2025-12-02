@@ -48,16 +48,18 @@ public class ContractService {
 
         String id = generalId(employee.getId());
 
-        Contract contract = new Contract();
-        contract.setId(id);
-        contract.setDateBegin(request.getDateBegin());
-        contract.setDateEnd(request.getDateEnd());
-        contract.setPosition(request.getPosition());
-        contract.setSalary(request.getSalary());
-        contract.setTerm(request.getTerm());
-        contract.setNote(request.getNote());
-        contract.setEmployee(employee);
-        contract.setTypeContract(typeContract);
+        var contract = Contract.builder()
+                .id(id)
+                .dateBegin(request.getDateBegin())
+                .dateEnd(request.getDateEnd())
+                .position(request.getPosition())
+                .salary(request.getSalary())
+                .term(request.getTerm())
+                .note(request.getNote())
+                .employee(employee)
+                .typeContract(typeContract)
+                .build();
+        
 
         contractRepository.save(contract);
 
