@@ -20,8 +20,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     @Query("SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END FROM Employee e WHERE e.phone = :phone")
     boolean existsByPhone(@Param("phone") String phone);
 
-    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END FROM Employee e WHERE e.identification = :identification")
-    boolean existsByIdentification(@Param("identification") String identification);
 
     @Query("SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END FROM Employee e WHERE e.id = :id")
     boolean existById(@Param("id")String id);

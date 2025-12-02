@@ -1,13 +1,19 @@
 package com.example.hrm.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "NhanVien")
 public class Employee {
@@ -36,21 +42,6 @@ public class Employee {
     @Column(name = "so_dien_thoai", unique = true)
     private String phone;
 
-    @Column(name = "chung_minh_thu", unique = true)
-    private String identification;
-
-    @Column(name = "noi_cap")
-    private String issuePlace;
-
-    @Column(name = "ngay_cap")
-    private LocalDate issueDate;
-
-    @Column(name = "tam_tru")
-    private String tempAddress;
-
-    @Column(name = "thuong_tru")
-    private String permanent ;
-
     @Column(name = "so_thich")
     private String habit;
 
@@ -60,17 +51,25 @@ public class Employee {
     @Column(name = "muc_luong")
     private BigDecimal wage;
 
+    @Builder.Default
     @Column(name = "trang_thai")// 0:nghỉ việc - 1:hoạt động - 2:đang đợi duyệt - 3:từ chối
     private String status = "2";
 
-    @ManyToOne
-    @JoinColumn(name = "id_phong_ban")
-    private Department department;
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Identification identification;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses;
+
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Relatives> relatives;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private Bank bank;
+
+    @ManyToOne
+    @JoinColumn(name = "id_phong_ban")
+    private Department department;
 }
 

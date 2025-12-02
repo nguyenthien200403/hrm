@@ -2,6 +2,7 @@ package com.example.hrm.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -29,14 +31,16 @@ public class Account implements UserDetails {
     @Column(name = "mat_khau")
     private String password;
 
+    @Builder.Default
     @Column(name = "ngay_tao")
-    private LocalDate date = LocalDate.now();
+    private LocalDate dateCreate = LocalDate.now();
 
+    @Builder.Default
     @Column(name = "trang_thai")
     private Boolean status = true;
 
-    @Column(name = "dang_nhap_lan_dau")
-    private Boolean firstLogin = false;
+    @Column(name = "ngay_cap_nhat")
+   private LocalDate dateUpdate;
 
     @ManyToOne
     @JoinColumn(name = "id_vai_tro")

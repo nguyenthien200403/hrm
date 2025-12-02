@@ -65,11 +65,12 @@ public class AuthenticationService {
            Role role = findRole.get();
            String email = employee.getEmail();
 
-           Account account = new Account();
-           account.setNameAccount(email);
-           account.setPassword(passwordEncoder.encode(email));
-           account.setEmployee(employee);
-           account.setRole(role);
+           var account = Account.builder()
+                   .nameAccount(email)
+                   .password(passwordEncoder.encode(email))
+                   .employee(employee)
+                   .role(role)
+                   .build();
 
            accountRepository.save(account);
            AccountDTO dto = new AccountDTO(account);

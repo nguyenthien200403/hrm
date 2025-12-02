@@ -1,10 +1,10 @@
 package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.dto.RecruitmentDTO;
 import com.example.hrm.model.Recruitment;
 import com.example.hrm.repository.RecruitmentRepository;
 
-import com.example.hrm.request.RecruitmentRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,22 +33,23 @@ public class RecruitmentService {
             if(!recruitment.getStatus()){
                 return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Email Not Found",null);
             }
-            return new GeneralResponse<>(HttpStatus.OK.value(), "Verification Success", recruitment);
+            RecruitmentDTO dto = new RecruitmentDTO(recruitment);
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Verification Success", dto);
         }
         return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Email", null);
     }
 
 
-    public GeneralResponse<?> create(RecruitmentRequest request){
+    public GeneralResponse<?> create(RecruitmentDTO request){
         Optional<Recruitment> findResult = recruitmentRepository.findByEmail(request.getEmail());
         if(findResult.isPresent()){
             return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Email existed",null);
         }
         try{
-            Recruitment recruitment = new Recruitment();
-            recruitment.setEmail(request.getEmail());
-            recruitment.setName(request.getName());
-            recruitment.setDate(LocalDate.now());
+           var recruitment = Recruitment.builder()
+                   .email(request.getEmail())
+                   .name(request.getName())
+                   .build();
 
             recruitmentRepository.save(recruitment);
             return new GeneralResponse<>(HttpStatus.CREATED.value(),"Success", recruitment);

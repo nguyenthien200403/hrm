@@ -1,6 +1,8 @@
 package com.example.hrm.request;
 
+import com.example.hrm.dto.AddressDTO;
 import com.example.hrm.dto.BankDTO;
+import com.example.hrm.dto.IdentificationDTO;
 import com.example.hrm.dto.RelativeDTO;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -37,26 +39,16 @@ public class EmployeeRequest {
     @Pattern(regexp = "\\d{10}", message = "LENGTH 10")
     private String phone;
 
-    @NotBlank(message = "NOT NULL")
-    @Pattern(regexp = "\\d{12}", message = "LENGTH 12")
-    private String identification;
-
-    @NotBlank(message = "NOT NULL")
-    private String issuePlace;
-
-    @NotNull(message = "NOT NULL")
-    private LocalDate issueDate;
-
-    @NotBlank(message = "NOT NULL")
-    private String tempAddress;
-
-    @NotBlank(message = "NOT NULL")
-    private String permanent ;
-
     private String habit;
 
     @NotBlank(message = "NOT NULL")
     private String statusMarital;
+
+    @NotNull(message = "Thông tin chứng minh thư không được để trống")
+    private IdentificationDTO identification;
+
+    @NotEmpty(message = "Danh sách địa chỉ không được để trống")
+    private List<AddressDTO> address;
 
     @NotEmpty(message = "Danh sách người thân không được để trống")
     private List<RelativeDTO> relatives;

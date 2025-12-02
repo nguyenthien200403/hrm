@@ -39,7 +39,6 @@ public class JwtService {
         Account account = (Account) userDetails;
         claims.put("Id-Employee", account.getEmployee().getId());
         claims.put("Name-Employee", account.getEmployee().getName());
-        claims.put("firstLogin", account.getFirstLogin());
 
         return generateToken(claims, userDetails);
     }

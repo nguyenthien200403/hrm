@@ -29,7 +29,7 @@ public class ContractDTO {
         this.idEmployee = contract.getEmployee().getId();
         this.nameEmp = contract.getEmployee().getName();
         this.phone = contract.getEmployee().getPhone();
-        this.identification = contract.getEmployee().getIdentification();
+        this.identification = contract.getEmployee().getIdentification().getId();
         this.dateBegin = contract.getDateBegin();
         this.dateEnd = contract.getDateEnd();
         this.position = contract.getPosition();

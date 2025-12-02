@@ -9,12 +9,12 @@ import java.time.LocalDate;
 @Data
 public class AccountDTO {
     private String nameAccount;
-    private LocalDate date;
+    private LocalDate dateCreate;
     private String nameRole;
 
     public AccountDTO(Account account){
         this.nameAccount = account.getNameAccount();
-        this.date = account.getDate();
+        this.dateCreate = account.getDateCreate();
         this.nameRole = account.getRole().getNameRole();
     }
 }

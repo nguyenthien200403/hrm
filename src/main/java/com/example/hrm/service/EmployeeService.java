@@ -1,16 +1,12 @@
 package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
-import com.example.hrm.dto.BankDTO;
-import com.example.hrm.dto.EmployeeDTO;
-import com.example.hrm.dto.RelativeDTO;
-import com.example.hrm.model.Bank;
-import com.example.hrm.model.Department;
-import com.example.hrm.model.Employee;
-import com.example.hrm.model.Relatives;
+import com.example.hrm.dto.*;
+import com.example.hrm.model.*;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.DepartmentRepository;
 import com.example.hrm.repository.EmployeeRepository;
+import com.example.hrm.repository.IdentificationRepository;
 import com.example.hrm.repository.RecruitmentRepository;
 import com.example.hrm.request.EmployeeRequest;
 
@@ -37,6 +33,7 @@ public class EmployeeService {
     private final RecruitmentRepository recruitmentRepository;
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+    private final IdentificationRepository identificationRepository;
 
 
     public GeneralResponse<?> getEmployeeByID(String id){
@@ -76,7 +73,8 @@ public class EmployeeService {
         if (employeeRepository.existsByPhone(request.getPhone())){
             return new GeneralResponse<>(status, "Existed Phone", null);
         }
-        if (employeeRepository.existsByIdentification(request.getIdentification())){
+        Optional<Identification> findResult = identificationRepository.findById(request.getIdentification().getId());
+        if (findResult.isPresent()){
             return new GeneralResponse<>(status, "Existed Identification", null);
         }
         return null;
@@ -84,7 +82,7 @@ public class EmployeeService {
     
     public GeneralResponse<?> create(EmployeeRequest request){
         try{
-            String id = generalId(request.getIdentification());
+            String id = generalId(request.getIdentification().getId());
             GeneralResponse<?> check = checkDataInput(request, id);
 
             if(check != null){
@@ -95,10 +93,10 @@ public class EmployeeService {
 
             Employee employee = convertToEmployee(request, id);
             employeeRepository.save(employee);
-            EmployeeDTO dto = new EmployeeDTO(employee);
+            //EmployeeDTO dto = new EmployeeDTO(employee);
 
+            return new GeneralResponse<>(HttpStatus.CREATED.value(),"Success", null);
 
-            return new GeneralResponse<>(HttpStatus.CREATED.value(),"Success", dto);
         }catch (DataIntegrityViolationException e){
             return new GeneralResponse<>(HttpStatus.CONFLICT.value(),"Existed data", e.getMessage());
         }catch (Exception e) {
@@ -108,8 +106,8 @@ public class EmployeeService {
     }
 
     @Transactional
-    private
-    void update(String email) {
+    private void update(String email) {
+        Optional<Recruitment> findResult = recruitmentRepository.findByEmail(email);
         int updated = recruitmentRepository.updateByEmail(email, false);
         if (updated > 0) {
             logger.info("Recruitment updated successfully for email {}", email);
@@ -121,53 +119,77 @@ public class EmployeeService {
 
 
     private static Employee convertToEmployee(EmployeeRequest request, String id) {
-        Employee employee = new Employee();
-        employee.setId(id);
-        employee.setName(request.getName());
-        employee.setGender(request.getGender());
-        employee.setEmail(request.getEmail());
-        employee.setBirthDate(request.getBirthDate());
-        employee.setPhone(request.getPhone());
-        employee.setNation(request.getNation());
-        employee.setEthnic(request.getEthnic());
-        employee.setIdentification(request.getIdentification());
-        employee.setIssueDate(request.getIssueDate());
-        employee.setIssuePlace(request.getIssuePlace());
-        employee.setTempAddress(request.getTempAddress());
-        employee.setPermanent(request.getPermanent());
-        employee.setHabit(request.getHabit());
-        employee.setStatusMarital(request.getStatusMarital());
+        Employee employee = Employee.builder()
+                .id(id)
+                .name(request.getName())
+                .gender(request.getGender())
+                .birthDate(request.getBirthDate())
+                .email(request.getEmail())
+                .nation(request.getNation())
+                .ethnic(request.getEthnic())
+                .phone(request.getPhone())
+                .habit(request.getHabit())
+                .statusMarital(request.getStatusMarital())
+                .build();
+
+        employee.setIdentification(mapIdentification(request.getIdentification(), employee));
+        employee.setAddresses(mapAddress(request.getAddress(), employee));
         employee.setRelatives(mapRelatives(request.getRelatives(), employee));
         employee.setBank(mapBank(request.getBank(), employee));
+
         return employee;
     }
 
-    private static List<Relatives> mapRelatives(List<RelativeDTO> relativeDTOS, Employee employee) {
-        return relativeDTOS.stream()
-                .map(r -> {
-                    Relatives relative = new Relatives();
-                    relative.setName(r.getName());
-                    relative.setRelation(r.getRelation());
-                    relative.setDateOfBirth(r.getDateOfBirth());
-                    relative.setGender(r.getGender());
-                    relative.setPhone(r.getPhone());
-                    relative.setEmployee(employee);
-                    return relative;
-                })
+
+    private static List<Relatives> mapRelatives(List<RelativeDTO> dto, Employee employee) {
+        return dto.stream()
+                .map(r -> Relatives.builder()
+                        .name(r.getName())
+                        .relation(r.getRelation())
+                        .dateOfBirth(r.getDateOfBirth())
+                        .gender(r.getGender())
+                        .phone(r.getPhone())
+                        .employee(employee)
+                        .build())
                 .collect(Collectors.toList());
     }
 
-    private static Bank mapBank(BankDTO dto, Employee employee){
-        Bank bank = new Bank();
-        bank.setNameBank(dto.getNameBank());
-        bank.setAgent(dto.getAgent());
-        bank.setNameAccountBank(dto.getNameAccountBank());
-        bank.setNumberAccountBank(dto.getNumberAccountBank());
-        bank.setProvince(dto.getProvince());
-        bank.setNumberRout(dto.getNumberRout());
-        bank.setEmployee(employee);
-        return bank;
+
+    private static List<Address> mapAddress(List<AddressDTO> dto, Employee employee){
+        return dto.stream()
+                .map(ad -> Address.builder()
+                        .addressType(ad.getAddressType())
+                        .street(ad.getStreet())
+                        .ward(ad.getWard())
+                        .district(ad.getDistrict())
+                        .province(ad.getProvince())
+                        .employee(employee)
+                        .build()).
+                collect(Collectors.toList());
     }
+
+    private static Bank mapBank(BankDTO dto, Employee employee){
+      return Bank.builder()
+              .nameBank(dto.getNameBank())
+              .agent(dto.getAgent())
+              .nameAccountBank(dto.getNameAccountBank())
+              .numberAccountBank(dto.getNumberAccountBank())
+              .numberRout(dto.getNumberRout())
+              .province(dto.getProvince())
+              .employee(employee)
+              .build();
+    }
+
+    private static Identification mapIdentification(IdentificationDTO dto, Employee employee){
+        return Identification.builder()
+                .id(dto.getId())
+                .place(dto.getPlace())
+                .date(dto.getDate())
+                .employee(employee)
+                .build();
+    }
+
+
 
 
     public GeneralResponse<?> verifyEmployee(String id, String nameDepart){
