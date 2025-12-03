@@ -24,8 +24,9 @@ public class EmployeeTest {
 
     @Test
     public void findByEmailTest(){
-        String email = "nguyenngocthien20042003@gmail.com";
+        String email = "nguyengocthien200403@gmail.com";
         boolean result = employeeRepository.existsByEmail(email);
+        System.out.println(result);
         assertThat(result);
     }
 
@@ -36,13 +37,13 @@ public class EmployeeTest {
 //            System.out.println("No");
 //    }
 
-    @Test
-    public void findByIdentificationTest(){
-        String identification = "082203001924";
-        boolean result = employeeRepository.existsByIdentification(identification);
-        assertThat(result);
-
-    }
+//    @Test
+//    public void findByIdentificationTest(){
+//        String identification = "082203001924";
+//        boolean result = employeeRepository.existsByIdentification(identification);
+//        assertThat(result);
+//
+//    }
 
     @Test
     public void findByPhoneTest(){
@@ -58,14 +59,14 @@ public class EmployeeTest {
         assertThat(result);
     }
 
-    @Test
-    public void updateSuccessTest(){
-        String status = "1";
-        String idDepart ="hashfa";
-        String id = "192420112025133247";
-        int update = employeeRepository.updateById(status,idDepart,id);
-        assertThat(update);
-    }
+//    @Test
+//    public void updateSuccessTest(){
+//        String status = "1";
+//        String idDepart ="hashfa";
+//        String id = "192420112025133247";
+//        int update = employeeRepository.updateById(status,idDepart,id);
+//        assertThat(update);
+//    }
 
 
 

@@ -37,7 +37,7 @@ public class SecurityConfiguration {
             .csrf(AbstractHttpConfigurer::disable)
              .authorizeHttpRequests(auth -> auth
                  // Public endpoints
-                 .requestMatchers("/authentications","/individuals","/confirmations", "/admin/**", "/accounts").permitAll()
+                 .requestMatchers("/authentications","/individuals","/confirmations", "/admin/**", "/accounts","/forgot-password").permitAll()
 
                  // Role-based endpoints
 //                 .requestMatchers("/admin/recruitment").hasRole("admin")
