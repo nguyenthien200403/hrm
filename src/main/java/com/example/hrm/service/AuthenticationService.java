@@ -3,8 +3,10 @@ package com.example.hrm.service;
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.AccountDTO;
 import com.example.hrm.model.Employee;
+import com.example.hrm.model.OTP;
 import com.example.hrm.model.Role;
 import com.example.hrm.repository.EmployeeRepository;
+import com.example.hrm.repository.OTPRepository;
 import com.example.hrm.repository.RoleRepository;
 import com.example.hrm.request.AuthenticationRequest;
 import com.example.hrm.model.Account;
@@ -18,7 +20,9 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class AuthenticationService {
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final OTPRepository otpRepository;
 
     private final AuthenticationManager authenticationManager;
 
@@ -104,4 +109,21 @@ public class AuthenticationService {
 
         return new GeneralResponse<>(HttpStatus.OK.value(), "Account changed Successfully" , null);
     }
+
+
+    public GeneralResponse<?> resetPassword(String email, String newPassword){
+        Optional<Account> findResult = accountRepository.findByEmployeeEmail(email);
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Email", null);
+
+        }
+
+        Account account = findResult.get();
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Reset Password Success", null);
+    }
+
+
 }

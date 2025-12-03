@@ -4,8 +4,11 @@ import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.request.AuthenticationRequest;
 import com.example.hrm.request.RegisterRequest;
 import com.example.hrm.service.AuthenticationService;
+import com.example.hrm.service.OTPService;
+import jakarta.persistence.Entity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final AuthenticationService service;
+    private final OTPService otpService;
 
     @PostMapping("/authentications")
     public ResponseEntity<?> authenticate(@Valid @RequestBody AuthenticationRequest request){
@@ -33,6 +37,24 @@ public class AuthenticationController {
 
         GeneralResponse<?> response = service.changeInfo(token, request.getNameAccount(),
                                                                     request.getPassword());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email){
+        otpService.forgotPassword(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/verification/otp")
+    public ResponseEntity<?> verifyOtp(@RequestParam String email, @RequestParam String otp){
+        GeneralResponse<?> response = otpService.verifyOtp(email, otp);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String newPassword){
+        GeneralResponse<?> response = service.resetPassword(email, newPassword);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

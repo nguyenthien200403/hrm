@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
+
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -27,5 +28,13 @@ public class AccountTest {
         String nameAccount = "nguyenngocthien200403@gmail.com";
         Optional<Account> findResult = accountRepository.findByNameAccount(nameAccount);
         assertThat(findResult).isPresent();
+    }
+
+    @Test
+    public void findByEmployeeEmailTest(){
+        String email = "nguyenngocthien200403@gmail.com";
+        Optional<Account> findResult = accountRepository.findByEmployeeEmail(email);
+        assertThat(findResult).isPresent();
+
     }
 }
