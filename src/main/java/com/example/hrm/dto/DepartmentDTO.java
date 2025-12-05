@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Data
 public class DepartmentDTO {
@@ -19,6 +20,11 @@ public class DepartmentDTO {
         this.name = department.getName();
         this.date = department.getDate();
         this.describe = department.getDescribe();
-        this.amountEmployee = department.getEmployee() != null ? department.getEmployee().size() : 0;
+        this.amountEmployee = department.getEmployee() != null
+                ? (int) department.getEmployee()
+                        .stream()
+                        .filter(e -> Objects.equals(e.getStatus(), "1"))
+                        .count()
+                : 0;
     }
 }
