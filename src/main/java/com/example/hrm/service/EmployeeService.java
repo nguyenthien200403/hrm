@@ -40,9 +40,9 @@ public class EmployeeService {
         Optional<Employee> findResult = employeeRepository.findById(id);
         if(findResult.isPresent()){
             EmployeeDTO employeeDTO = new EmployeeDTO(findResult.get());
-            return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee", employeeDTO);
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee with Id: " + id, employeeDTO);
         }
-        return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Id", null);
+        return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Employee with Id: " + id, null);
     }
 
     public GeneralResponse<?> getAllByStatus(String status, String message){

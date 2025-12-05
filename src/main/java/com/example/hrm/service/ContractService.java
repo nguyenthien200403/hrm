@@ -5,6 +5,7 @@ import com.example.hrm.dto.ContractDTO;
 import com.example.hrm.model.Contract;
 import com.example.hrm.model.Employee;
 import com.example.hrm.model.TypeContract;
+import com.example.hrm.projection.ContractProjection;
 import com.example.hrm.repository.ContractRepository;
 import com.example.hrm.repository.EmployeeRepository;
 import com.example.hrm.repository.TypeContractRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -66,6 +68,68 @@ public class ContractService {
         ContractDTO dto = new ContractDTO(contract);
 
         return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", dto);
+    }
+
+//    public GeneralResponse<?> getAllContracts(){
+//        List<ContractProjection> list = contractRepository.findAllContracts();
+//        if(list.isEmpty()){
+//            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+//        }
+//        return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
+//    }
+
+    public GeneralResponse<?> getAllContractsWithDateSign(boolean signed, String type){
+        List<ContractProjection> list = contractRepository.findAllContractsByDateSign(signed, type);
+        if(list.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
+    }
+
+
+
+
+    public GeneralResponse<?> getDetailsByIdContract(String id){
+        Optional<Contract> findResult = contractRepository.findById(id);
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Contract with Id: " + id, null);
+        }
+        ContractDTO dto = new ContractDTO(findResult.get());
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Contracts Details with Id: " + id, dto);
+    }
+
+
+    public GeneralResponse<?> update(ContractRequest request, String id){
+        Optional<Contract> findResult = contractRepository.findById(id);
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Contract with Id: " + id, null);
+        }
+        Optional<TypeContract> findT = typeContractRepository.findByName(request.getNameTypeContract());
+
+        if(findT.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Type Contract", null);
+
+        }
+
+        Contract contract = findResult.get();
+        contract.setDateBegin(request.getDateBegin());
+        contract.setDateEnd(request.getDateEnd());
+        contract.setPosition(request.getPosition());
+        contract.setTerm(request.getTerm());
+        contract.setSalary(request.getSalary());
+        contract.setTypeContract(findT.get());
+
+        contractRepository.save(contract);
+        return new GeneralResponse<>(HttpStatus.OK.value(), "SuccessFul Update", null);
+    }
+
+    public GeneralResponse<?> searchContractsBy(String keyword, String type){
+        List<ContractProjection> list = contractRepository.searchContractsBy(keyword, type);
+        if(list.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Contract", null);
+        }
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Successful Search", list);
     }
 
 }

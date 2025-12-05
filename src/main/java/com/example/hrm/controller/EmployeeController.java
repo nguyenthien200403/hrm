@@ -39,7 +39,7 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping("/admin/verification/{id}")
+    @PutMapping("/admin/verifications/{id}")
     public ResponseEntity<?> verifyEmployee(@PathVariable String id, @RequestParam String nameDepart){
         GeneralResponse<?> response = employeeService.verifyEmployee(id, nameDepart);
         return ResponseEntity.status(response.getStatus()).body(response);

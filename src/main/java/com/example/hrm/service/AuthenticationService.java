@@ -20,6 +20,7 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
@@ -33,7 +34,7 @@ public class AuthenticationService {
     private final RoleRepository roleRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final OTPRepository otpRepository;
+
 
     private final AuthenticationManager authenticationManager;
 
@@ -62,7 +63,7 @@ public class AuthenticationService {
     public GeneralResponse<?> register(RegisterRequest request){
        try{
            Optional<Employee> findEmp = employeeRepository.findById(request.getIdEmployee());
-           Optional<Role> findRole = roleRepository.findByNameRole(request.getNameRole());
+           Optional<Role> findRole = roleRepository.findByName(request.getNameRole());
            if(findEmp.isEmpty() || findRole.isEmpty()){
                return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found: {Role or Employee}", null);
            }
@@ -104,6 +105,7 @@ public class AuthenticationService {
 
         account.setNameAccount(newName);
         account.setPassword(passwordEncoder.encode(newPassword));
+        account.setDateUpdate(LocalDate.now());
 
         accountRepository.save(account);
 

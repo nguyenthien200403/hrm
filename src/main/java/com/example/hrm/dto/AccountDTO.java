@@ -15,6 +15,6 @@ public class AccountDTO {
     public AccountDTO(Account account){
         this.nameAccount = account.getNameAccount();
         this.dateCreate = account.getDateCreate();
-        this.nameRole = account.getRole().getNameRole();
+        this.nameRole = account.getRole().getName();
     }
 }

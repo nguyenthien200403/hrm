@@ -1,9 +1,14 @@
 package com.example.hrm.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
+import java.util.List;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "VaiTro")
 public class Role {
@@ -13,8 +18,11 @@ public class Role {
     private Long id;
 
     @Column(name= "ten_vai_tro")
-    private String nameRole;
+    private String name;
 
     @Column(name = "mo_ta")
     private String describe;
+
+    @OneToMany(mappedBy = "role")
+    private List<Account> accounts;
 }

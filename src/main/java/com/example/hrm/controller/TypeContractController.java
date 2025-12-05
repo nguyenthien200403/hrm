@@ -16,7 +16,7 @@ public class TypeContractController {
 
     @GetMapping("/admin/contract-types")
     public ResponseEntity<?> getAllTypeContract(){
-        GeneralResponse<?> response = service.getAllTypeContract();
+        GeneralResponse<?> response = service.getAllNameTypeContract();
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
