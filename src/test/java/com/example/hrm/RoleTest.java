@@ -24,8 +24,10 @@ public class RoleTest{
     @Test
     public void findByName(){
         String nameRole = "admin";
-        Optional<Role> findResult = roleRepository.findByNameRole(nameRole);
+        Optional<Role> findResult = roleRepository.findByName(nameRole);
         findResult.ifPresent(System.out :: println);
         assertThat(findResult).isPresent();
     }
+
+
 }

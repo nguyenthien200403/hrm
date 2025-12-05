@@ -5,6 +5,7 @@ import com.example.hrm.model.Contract;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class ContractDTO {
@@ -19,7 +20,7 @@ public class ContractDTO {
     private int term;
     private String position;
     private BigDecimal salary;
-    private LocalDate dateSign;
+    private LocalDateTime dateSign;
     private String note;
 
 

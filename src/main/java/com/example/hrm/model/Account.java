@@ -53,7 +53,7 @@ public class Account implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getNameRole().trim().toUpperCase()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName().trim().toUpperCase()));
     }
 
     @Override

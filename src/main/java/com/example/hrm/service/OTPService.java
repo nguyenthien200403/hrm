@@ -43,25 +43,28 @@ public class OTPService {
 
         otpRepository.deleteByEmail(email);
 
+        String otpSend = generateOtp();
+
         var otp = OTP.builder()
-                .otp(generateOtp())
+                .otp(otpSend)
                 .email(email)
                 .expiryDate(LocalDateTime.now().plusMinutes(10))
                 .build();
 
         otpRepository.save(otp);
         //Gửi otp qua email;
-        sendOtpEmail(email,generateOtp());
+        sendOtpEmail(email,otpSend);
     }
 
     public void sendOtpEmail(String email, String otp) {
         String subject = "Mã OTP đặt lại mật khẩu";
         String body = "Mã OTP của bạn là: " + otp + ". OTP có hiệu lực trong 10 phút.";
 
-        EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setRecipient(email);
-        emailDetails.setSubject(subject);
-        emailDetails.setMsgBody(body);
+       var emailDetails = EmailDetails.builder()
+               .recipient(email)
+               .subject(subject)
+               .msgBody(body)
+               .build();
 
        emailService.sendSimpleMail(emailDetails);
     }

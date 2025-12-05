@@ -46,7 +46,7 @@ public class AuthenticationController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/verification/otp")
+    @PostMapping("/verifications/otp")
     public ResponseEntity<?> verifyOtp(@RequestParam String email, @RequestParam String otp){
         GeneralResponse<?> response = otpService.verifyOtp(email, otp);
         return ResponseEntity.status(response.getStatus()).body(response);

@@ -1,5 +1,5 @@
 package com.example.hrm.projection;
 
-public interface DepartmentProjection {
+public interface BasicInfoProjection {
     String getName();
 }

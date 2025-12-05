@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -33,7 +34,7 @@ public class Contract {
     private int term;
 
     @Column(name = "ngay_ky")
-    private LocalDate dateSign;
+    private LocalDateTime dateSign;
 
     @Column(name = "ghi_chu")
     private String note;
