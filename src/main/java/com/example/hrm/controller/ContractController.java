@@ -30,7 +30,7 @@ public class ContractController {
 
     @GetMapping("/admin/contracts")
     public ResponseEntity<?> getAllContractsWithDateSign(@RequestParam Boolean signed, @RequestParam String type){
-        GeneralResponse<?> response = contractService.getAllContractsWithDateSign(signed, type);
+        GeneralResponse<?> response = contractService.getAllByDateSignAndType(signed, type);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

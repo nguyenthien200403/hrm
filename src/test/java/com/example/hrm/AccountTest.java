@@ -37,4 +37,11 @@ public class AccountTest {
         assertThat(findResult).isPresent();
 
     }
+
+    @Test
+    public void findByEmployeeIdTest(){
+        String id = "193803122025005944";
+        Optional<Account> findResult = accountRepository.findByEmployeeId(id);
+        assertThat(findResult).isPresent();
+    }
 }

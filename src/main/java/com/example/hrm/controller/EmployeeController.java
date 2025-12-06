@@ -5,6 +5,7 @@ import com.example.hrm.request.EmployeeRequest;
 import com.example.hrm.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +22,6 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/admin/employees-processing")
-    public ResponseEntity<?> showAllByStatusProcessing(){
-        GeneralResponse<?> response = employeeService.getAllByStatus("2", "List Processing Employee");
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
-
-    @GetMapping("/admin/employees-resigned")
-    public ResponseEntity<?> showAllByStatusResigned(){
-        GeneralResponse<?> response = employeeService.getAllByStatus("0" , "List Resigned Employee");
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
 
     @GetMapping("/admin/employees/{id}")
     public ResponseEntity<?> showDetailByID(@PathVariable String id){
@@ -56,4 +46,28 @@ public class EmployeeController {
         GeneralResponse<?> response = employeeService.amountEmployeeByStatus("2", "Amount Employee Processing");
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+
+    @GetMapping("/admin/employees")
+    public ResponseEntity<?> getAllByStatusAndDepartment(@RequestParam String status,
+                                                         @RequestParam(required = false) String name){
+        GeneralResponse<?> response = employeeService.getAllByStatusAndDepartment(status, name);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/admin/employees/search")
+    public ResponseEntity<?> searchEmployeesBy(@RequestParam String keyword,
+                                               @RequestParam String name,
+                                               @RequestParam String status){
+        GeneralResponse<?> response = employeeService.searchEmployeesBy(keyword, name, status);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @PutMapping("/admin/employees/resign/{id}")
+    public ResponseEntity<?> resign(@PathVariable String id){
+        GeneralResponse<?> response = employeeService.resignConfirmation(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
 }
