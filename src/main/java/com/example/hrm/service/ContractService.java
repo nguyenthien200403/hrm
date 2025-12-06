@@ -78,8 +78,8 @@ public class ContractService {
 //        return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
 //    }
 
-    public GeneralResponse<?> getAllContractsWithDateSign(boolean signed, String type){
-        List<ContractProjection> list = contractRepository.findAllContractsByDateSign(signed, type);
+    public GeneralResponse<?> getAllByDateSignAndType(boolean signed, String type){
+        List<ContractProjection> list = contractRepository.findAllByDateSignAndType(signed, type);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }

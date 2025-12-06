@@ -22,12 +22,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
             "FROM Employee e WHERE e.phone = :phone")
     boolean existsByPhone(@Param("phone") String phone);
 
-
     @Query("SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Employee e WHERE e.id = :id")
     boolean existById(@Param("id")String id);
 
-    List<EmployeeProjection> findAllByStatus(String status);
 
     @Query("SELECT COUNT(e) FROM Employee e WHERE e.status = :status")
     long countEmpByStatus(@Param("status") String status);
@@ -37,6 +35,31 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Optional<Employee> findById(@NonNull String id);
 
 
+    @Query("SELECT e.id AS id," +
+            " e.name AS name," +
+            " e.email AS email," +
+            " e.gender AS gender " +
+            "FROM Employee e " +
+            "WHERE (:status = '1' AND e.department.name = :name)")
+    List<EmployeeProjection> findAllByStatusAndDepartment(@Param("status") String status,
+                                                          @Param("name") String name);
 
+    List<EmployeeProjection> findAllByStatus(String status);
+
+
+    @Query("SELECT e.id AS id, " +
+            "e.name AS name, " +
+            "e.email AS email, " +
+            "e.gender AS gender " +
+            "FROM Employee e " +
+            "WHERE ( " +
+            "  LOWER(e.id) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "  LOWER(e.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            ") " +
+            "AND (e.department.name = :name)" +
+            "AND (e.status = :status)")
+    List<EmployeeProjection> searchEmployeesBy(@Param("keyword") String keyword,
+                                               @Param("name") String name,
+                                               @Param("status") String status);
 
 }

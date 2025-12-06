@@ -12,4 +12,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     boolean existsByNameAccountAndIdNot(String nameAccount,Long id);
 
     Optional<Account> findByEmployeeEmail(String email);
+
+
 }

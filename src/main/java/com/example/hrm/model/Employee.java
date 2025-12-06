@@ -71,5 +71,11 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "id_phong_ban")
     private Department department;
+
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Account account;
+//
+//    @OneToMany(mappedBy = "employee")
+//    private List<Contract> contracts;
 }
 

@@ -4,15 +4,13 @@ import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.*;
 import com.example.hrm.model.*;
 import com.example.hrm.projection.EmployeeProjection;
-import com.example.hrm.repository.DepartmentRepository;
-import com.example.hrm.repository.EmployeeRepository;
-import com.example.hrm.repository.IdentificationRepository;
-import com.example.hrm.repository.RecruitmentRepository;
+import com.example.hrm.repository.*;
 import com.example.hrm.request.EmployeeRequest;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final IdentificationRepository identificationRepository;
+    private final ContractRepository contractRepository;
 
 
     public GeneralResponse<?> getEmployeeByID(String id){
@@ -45,14 +44,39 @@ public class EmployeeService {
         return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Employee with Id: " + id, null);
     }
 
-    public GeneralResponse<?> getAllByStatus(String status, String message){
-        List<EmployeeProjection> employees = employeeRepository.findAllByStatus(status);
-        if(employees.isEmpty()){
+
+
+    public GeneralResponse<?> getAllByStatusAndDepartment(String status, String name){
+        List<EmployeeProjection> list;
+
+        if ("1".equals(status)) {
+            // Trạng thái làm việc → cần lọc theo phòng ban
+            if (name == null || name.isBlank()) {
+                return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Name Department Not Null", null);
+            }
+            list = employeeRepository.findAllByStatusAndDepartment(status, name);
+        } else {
+            // Trạng thái khác → không cần lọc phòng ban
+            list = employeeRepository.findAllByStatus(status);
+        }
+
+        if (list.isEmpty()) {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
-        return new GeneralResponse<>(HttpStatus.OK.value(), message, employees);
-
+        return new GeneralResponse<>(HttpStatus.OK.value(), "List Employee", list);
     }
+
+    public GeneralResponse<?> searchEmployeesBy(String keyword, String name, String status){
+        List<EmployeeProjection> list = employeeRepository.searchEmployeesBy(keyword, name, status);
+
+        if (list.isEmpty()) {
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "List Employee", list);
+    }
+
+
+
 
     public String generalId(String identification){
         String last4Digits = identification.substring(identification.length() - 4);
@@ -214,5 +238,38 @@ public class EmployeeService {
         long amount = employeeRepository.countEmpByStatus(status);
         return new GeneralResponse<>(HttpStatus.OK.value(), message, amount);
     }
+
+
+
+    public GeneralResponse<?> resignConfirmation(String id){
+        Optional<Employee> findResult = employeeRepository.findById(id);
+        if (findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee with Id: " + id, null);
+        }
+
+        String typeNameContract = "Hợp đồng nghỉ việc";
+        int result = contractRepository.checkContractResign(id, typeNameContract);
+
+        switch (result){
+            case 0:
+                //Không có hợp đồng nghỉ việc
+                return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found The Resignation Contract", null);
+            case 1:
+                //Hợp đồng nghỉ việc chưa có ký
+                return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"The Resignation Contract has no signing date", null);
+            default:
+                Employee employee = findResult.get();
+                employee.setStatus("0");
+                Account account = employee.getAccount();
+                if (account != null) {
+                    account.setStatus(false);
+                }
+                employeeRepository.save(employee);
+                return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Resignation Confirmation", null);
+        }
+
+    }
+
+
 
 }

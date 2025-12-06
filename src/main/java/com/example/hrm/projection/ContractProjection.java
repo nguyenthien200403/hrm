@@ -5,4 +5,5 @@ public interface ContractProjection {
     String getEmployeeId();
     String getEmployeeName();
     String getNote();
+
 }

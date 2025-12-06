@@ -40,7 +40,7 @@ public class Account implements UserDetails {
     private Boolean status = true;
 
     @Column(name = "ngay_cap_nhat")
-   private LocalDate dateUpdate;
+    private LocalDate dateUpdate;
 
     @ManyToOne
     @JoinColumn(name = "id_vai_tro")
