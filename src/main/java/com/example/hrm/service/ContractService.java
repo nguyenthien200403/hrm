@@ -70,13 +70,13 @@ public class ContractService {
         return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", dto);
     }
 
-//    public GeneralResponse<?> getAllContracts(){
-//        List<ContractProjection> list = contractRepository.findAllContracts();
-//        if(list.isEmpty()){
-//            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
-//        }
-//        return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
-//    }
+    public GeneralResponse<?> getAllContractsByEmployeeId(String id){
+        List<ContractProjection> list = contractRepository.findAllByEmployeeId(id);
+        if(list.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
+    }
 
     public GeneralResponse<?> getAllByDateSignAndType(boolean signed, String type){
         List<ContractProjection> list = contractRepository.findAllByDateSignAndType(signed, type);

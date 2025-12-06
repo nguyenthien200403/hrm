@@ -240,15 +240,13 @@ public class EmployeeService {
     }
 
 
-
     public GeneralResponse<?> resignConfirmation(String id){
         Optional<Employee> findResult = employeeRepository.findById(id);
         if (findResult.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee with Id: " + id, null);
         }
 
-        String typeNameContract = "Hợp đồng nghỉ việc";
-        int result = contractRepository.checkContractResign(id, typeNameContract);
+        int result = contractRepository.checkContractResign(id, "Hợp đồng nghỉ việc");
 
         switch (result){
             case 0:

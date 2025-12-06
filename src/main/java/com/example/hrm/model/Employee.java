@@ -77,5 +77,15 @@ public class Employee {
 //
 //    @OneToMany(mappedBy = "employee")
 //    private List<Contract> contracts;
+
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
 
