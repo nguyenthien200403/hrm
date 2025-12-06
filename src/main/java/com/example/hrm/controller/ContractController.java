@@ -5,6 +5,7 @@ import com.example.hrm.request.ContractRequest;
 import com.example.hrm.service.ContractService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +22,12 @@ public class ContractController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-//    @GetMapping("/admin/contracts")
-//    public ResponseEntity<?> getAllContracts(){
-//        GeneralResponse<?> response = contractService.getAllContracts();
-//        return ResponseEntity.status(response.getStatus()).body(response);
-//
-//    }
+    @GetMapping("/admin/contracts/employee")
+    public ResponseEntity<?> getAllContractsByEmployeeId(@RequestParam String id){
+        GeneralResponse<?> response = contractService.getAllContractsByEmployeeId(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+
+    }
 
     @GetMapping("/admin/contracts")
     public ResponseEntity<?> getAllContractsWithDateSign(@RequestParam Boolean signed, @RequestParam String type){

@@ -50,6 +50,12 @@ public class Account implements UserDetails {
     @JoinColumn(name = "id_nhan_vien")
     private Employee employee;
 
+    @Override
+    public String toString() {
+        return "Account{" +
+                "nameAccount='" + nameAccount + '\'' +
+                '}';
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
