@@ -4,6 +4,7 @@ import com.example.hrm.dto.AddressDTO;
 import com.example.hrm.dto.BankDTO;
 import com.example.hrm.dto.IdentificationDTO;
 import com.example.hrm.dto.RelativeDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 public class EmployeeRequest {
 
+    @Email(message = "Email is not in the correct format")
     @NotBlank(message = "Not Null")
     private String emailRecruit;
 
@@ -22,6 +24,7 @@ public class EmployeeRequest {
     @NotNull(message = "NOT NULL")
     private Boolean gender;
 
+    @Past(message = "Birth date must be in the past")
     @NotNull(message = "NOT NULL")
     private LocalDate birthDate;
 
@@ -44,16 +47,16 @@ public class EmployeeRequest {
     @NotBlank(message = "NOT NULL")
     private String statusMarital;
 
-    @NotNull(message = "Thông tin chứng minh thư không được để trống")
+    @Valid
     private IdentificationDTO identification;
 
-    @NotEmpty(message = "Danh sách địa chỉ không được để trống")
+    @Valid
     private List<AddressDTO> address;
 
-    @NotEmpty(message = "Danh sách người thân không được để trống")
+    @Valid
     private List<RelativeDTO> relatives;
 
-    @NotNull(message = "Thông tin ngân hàng không được để trống")
+    @Valid
     private BankDTO bank;
 
 }

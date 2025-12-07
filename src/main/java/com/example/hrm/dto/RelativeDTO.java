@@ -3,6 +3,7 @@ package com.example.hrm.dto;
 import com.example.hrm.model.Relatives;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class RelativeDTO {
     @Pattern(regexp = "\\d{10}", message = "LENGTH 10")
     private String phone;
 
+    @Past(message = "Birth date must be in the past")
     @NotNull(message = "NOT NULL")
     private LocalDate dateOfBirth;
 

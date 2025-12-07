@@ -1,6 +1,7 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.dto.EmployeeDTO;
 import com.example.hrm.model.Account;
 import com.example.hrm.request.EmployeeRequest;
 import com.example.hrm.security.JwtService;
@@ -83,5 +84,13 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PutMapping("/personal")
+    public ResponseEntity<?> update(@Valid @RequestBody EmployeeDTO request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = employeeService.update(id, request);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }

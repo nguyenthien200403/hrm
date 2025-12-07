@@ -35,7 +35,7 @@ public class AuthenticationController {
     }
 
     @PutMapping("/accounts")
-    public ResponseEntity<?> changeInfo(@RequestBody AuthenticationRequest request){
+    public ResponseEntity<?> changeInfo(@Valid @RequestBody AuthenticationRequest request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         GeneralResponse<?> response = service.changeInfo(authentication, request);
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -56,6 +56,14 @@ public class AuthenticationController {
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String newPassword){
         GeneralResponse<?> response = service.resetPassword(email, newPassword);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/accounts")
+    public ResponseEntity<?> getAccount(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String nameAccount = authentication.getName();
+        GeneralResponse<?> response = service.getAccount(nameAccount);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
