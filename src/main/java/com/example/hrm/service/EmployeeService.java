@@ -7,12 +7,16 @@ import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.*;
 import com.example.hrm.request.EmployeeRequest;
 
+import com.example.hrm.security.JwtService;
 import lombok.RequiredArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +39,7 @@ public class EmployeeService {
     private final ContractRepository contractRepository;
 
 
-    public GeneralResponse<?> getEmployeeByID(String id){
+    public GeneralResponse<?> getEmployeeById(String id){
         Optional<Employee> findResult = employeeRepository.findById(id);
         if(findResult.isPresent()){
             EmployeeDTO employeeDTO = new EmployeeDTO(findResult.get());
@@ -265,8 +269,10 @@ public class EmployeeService {
                 employeeRepository.save(employee);
                 return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Resignation Confirmation", null);
         }
-
     }
+
+
+
 
 
 

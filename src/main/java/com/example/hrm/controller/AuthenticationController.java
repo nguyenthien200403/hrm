@@ -10,7 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -32,11 +35,9 @@ public class AuthenticationController {
     }
 
     @PutMapping("/accounts")
-    public ResponseEntity<?> changeInfo(@RequestHeader String token,
-                                        @RequestBody AuthenticationRequest request){
-
-        GeneralResponse<?> response = service.changeInfo(token, request.getNameAccount(),
-                                                                    request.getPassword());
+    public ResponseEntity<?> changeInfo(@RequestBody AuthenticationRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        GeneralResponse<?> response = service.changeInfo(authentication, request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

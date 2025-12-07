@@ -1,12 +1,16 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.model.Account;
 import com.example.hrm.request.EmployeeRequest;
+import com.example.hrm.security.JwtService;
 import com.example.hrm.service.EmployeeService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -15,6 +19,7 @@ public class EmployeeController {
 
 
     private final EmployeeService employeeService ;
+    private final JwtService jwtService;
 
     @PostMapping("/individuals")
     public ResponseEntity<?> create(@Valid @RequestBody EmployeeRequest request){
@@ -25,7 +30,7 @@ public class EmployeeController {
 
     @GetMapping("/admin/employees/{id}")
     public ResponseEntity<?> showDetailByID(@PathVariable String id){
-        GeneralResponse<?> response = employeeService.getEmployeeByID(id);
+        GeneralResponse<?> response = employeeService.getEmployeeById(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
@@ -66,6 +71,15 @@ public class EmployeeController {
     @PutMapping("/admin/employees/resign/{id}")
     public ResponseEntity<?> resign(@PathVariable String id){
         GeneralResponse<?> response = employeeService.resignConfirmation(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/personal")
+    public ResponseEntity<?> getPersonal(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = employeeService.getEmployeeById(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
