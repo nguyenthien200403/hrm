@@ -3,11 +3,13 @@ package com.example.hrm.service;
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.*;
 import com.example.hrm.model.*;
+import com.example.hrm.projection.EmployeeMapper;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.*;
 import com.example.hrm.request.EmployeeRequest;
 
-import com.example.hrm.security.JwtService;
+import com.example.hrm.sendEmail.EmailDetails;
+import com.example.hrm.sendEmail.EmailService;
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
@@ -15,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,13 +37,15 @@ public class EmployeeService {
     private final DepartmentRepository departmentRepository;
     private final IdentificationRepository identificationRepository;
     private final ContractRepository contractRepository;
+    private final EmployeeMapper employeeMapper;
+    private final EmailService emailService;
 
 
     public GeneralResponse<?> getEmployeeById(String id){
         Optional<Employee> findResult = employeeRepository.findById(id);
         if(findResult.isPresent()){
-            EmployeeDTO employeeDTO = new EmployeeDTO(findResult.get());
-            return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee with Id: " + id, employeeDTO);
+            EmployeeDTO dto = employeeMapper.toDto(findResult.get());
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee with Id: " + id, dto);
         }
         return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Employee with Id: " + id, null);
     }
@@ -218,8 +220,6 @@ public class EmployeeService {
     }
 
 
-
-
     public GeneralResponse<?> verifyEmployee(String id, String nameDepart){
 
         Optional<Employee> findEmp = employeeRepository.findById(id);
@@ -228,15 +228,34 @@ public class EmployeeService {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found: {Employee or Department} ", null);
         }
 
-
         Employee employee = findEmp.get();
         employee.setStatus("1");
         employee.setDepartment(findDepart.get());
 
         employeeRepository.save(employee);
 
+        sendAccountEmail(employee);
+
         return new GeneralResponse<>(HttpStatus.OK.value(), "Success", null);
     }
+
+    private void sendAccountEmail(Employee employee){
+
+        String email = employee.getEmail();
+        String subject = "Chào mừng bạn gia nhập công ty";
+        String body = "Xin chúc mừng bạn đã chính thức trở thành nhân viên của công ty.\n"
+                + "Thông tin tài khoản và mật khẩu cá nhân dùng để đăng nhập vào hệ thống của công ty: " + email + "\n"
+                + "Chúng tôi rất vui khi bạn đồng hành cùng đội ngũ!";
+
+        var emailDetails = EmailDetails.builder()
+                .recipient(email)
+                .subject(subject)
+                .msgBody(body)
+                .build();
+
+        emailService.sendSimpleMail(emailDetails);
+    }
+
 
     public GeneralResponse<?> amountEmployeeByStatus(String status, String message){
         long amount = employeeRepository.countEmpByStatus(status);
@@ -271,9 +290,49 @@ public class EmployeeService {
         }
     }
 
+    @Transactional
+    public GeneralResponse<?> update(String id, EmployeeDTO request){
+        Optional<Employee> findResult = employeeRepository.findById(id);
+
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee with Id: " + id, null);
+        }
 
 
+        Employee updateEntity = employeeMapper.toEntity(request);
 
+        updateEntity.setId(id);
 
+        if(updateEntity.getIdentification() != null){
+            updateEntity.getIdentification().setEmployee(updateEntity);
+        }
+
+        // --- Quan hệ 1-N: xóa rồi insert lại ---
+        updateEntity.getAddresses().clear();
+        if (request.getAddresses() != null) {
+            request.getAddresses().forEach(adDto -> {
+                Address ad = employeeMapper.toEntity(adDto);
+                ad.setEmployee(updateEntity);
+                updateEntity.getAddresses().add(ad);
+            });
+        }
+
+        updateEntity.getRelatives().clear();
+        if (request.getRelatives() != null) {
+            request.getRelatives().forEach(rDto -> {
+                Relatives r = employeeMapper.toEntity(rDto);
+                r.setEmployee(updateEntity);
+                updateEntity.getRelatives().add(r);
+            });
+        }
+
+        if(updateEntity.getBank() != null){
+            updateEntity.getBank().setEmployee(updateEntity);
+        }
+
+       Employee saved = employeeRepository.save(updateEntity);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Update ", employeeMapper.toDto(saved));
+    }
 
 }

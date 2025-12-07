@@ -78,9 +78,9 @@ public class AuthenticationService {
                    .build();
 
            accountRepository.save(account);
-           AccountDTO dto = new AccountDTO(account);
+           //AccountDTO dto = new AccountDTO(account);
 
-           return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", dto);
+           return new GeneralResponse<>(HttpStatus.CREATED.value(), "Successful Create Account", null);
        } catch (Exception e) {
            throw new RuntimeException(e);
        }
@@ -126,5 +126,13 @@ public class AuthenticationService {
         return new GeneralResponse<>(HttpStatus.OK.value(), "Reset Password Success", null);
     }
 
+    public GeneralResponse<?> getAccount(String nameAccount){
+        Optional<Account> findResult = accountRepository.findByNameAccount(nameAccount);
+        if (findResult.isPresent()){
+            AccountDTO dto = new AccountDTO(findResult.get());
+            return new GeneralResponse<>(HttpStatus.OK.value(), "Information Account", dto);
+        }
+        return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Account", null);
+    }
 
 }

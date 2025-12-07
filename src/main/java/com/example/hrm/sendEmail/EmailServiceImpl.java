@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,6 @@ public class EmailServiceImpl implements EmailService{
     public void sendSimpleMail(EmailDetails details) {
         // Try block to check for exceptions
         try {
-
             // Creating a simple mail message
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
@@ -41,7 +39,7 @@ public class EmailServiceImpl implements EmailService{
 
         // Catch block to handle the exceptions
         catch (Exception e) {
-            throw new RuntimeException("Lỗi khi gửi OTP", e);
+            throw new RuntimeException("Lỗi khi email", e);
         }
     }
 

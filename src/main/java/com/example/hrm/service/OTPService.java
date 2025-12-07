@@ -6,7 +6,6 @@ import com.example.hrm.repository.EmployeeRepository;
 import com.example.hrm.repository.OTPRepository;
 import com.example.hrm.sendEmail.EmailDetails;
 import com.example.hrm.sendEmail.EmailService;
-import com.example.hrm.sendEmail.EmailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
