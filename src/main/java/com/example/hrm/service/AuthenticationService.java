@@ -3,27 +3,26 @@ package com.example.hrm.service;
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.AccountDTO;
 import com.example.hrm.model.Employee;
-import com.example.hrm.model.OTP;
 import com.example.hrm.model.Role;
 import com.example.hrm.repository.EmployeeRepository;
-import com.example.hrm.repository.OTPRepository;
 import com.example.hrm.repository.RoleRepository;
 import com.example.hrm.request.AuthenticationRequest;
 import com.example.hrm.model.Account;
 import com.example.hrm.repository.AccountRepository;
 import com.example.hrm.request.RegisterRequest;
 import com.example.hrm.security.JwtService;
-import io.jsonwebtoken.Claims;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.Optional;
-import java.util.Random;
+
 
 @Service
 @RequiredArgsConstructor
@@ -87,17 +86,17 @@ public class AuthenticationService {
        }
     }
 
-    public GeneralResponse<?> changeInfo(String token, String newName, String newPassword){
+    public GeneralResponse<?> changeInfo(Authentication authentication, AuthenticationRequest request){
 
-        String oldName = jwtService.extractAccountName(token);
+        Account account = (Account) authentication.getPrincipal();
 
-        Optional<Account> findResult = accountRepository.findByNameAccount(oldName);
-
-        if(findResult.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Wrong Account Name ", null);
+        if(account == null){
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Wrong Account", null);
         }
 
-        Account account = findResult.get();
+        String newName = request.getNameAccount();
+        String newPassword = request.getPassword();
+
 
         if(accountRepository.existsByNameAccountAndIdNot(newName, account.getId())){
             return new GeneralResponse<>(HttpStatus.CONFLICT.value(), "Exists Account Name ", null);
