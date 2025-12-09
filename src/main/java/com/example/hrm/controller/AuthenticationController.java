@@ -34,7 +34,7 @@ public class AuthenticationController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping("/accounts")
+    @PutMapping("/personal/accounts")
     public ResponseEntity<?> changeInfo(@Valid @RequestBody AuthenticationRequest request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         GeneralResponse<?> response = service.changeInfo(authentication, request);
@@ -59,7 +59,7 @@ public class AuthenticationController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/accounts")
+    @GetMapping("/personal/accounts")
     public ResponseEntity<?> getAccount(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String nameAccount = authentication.getName();

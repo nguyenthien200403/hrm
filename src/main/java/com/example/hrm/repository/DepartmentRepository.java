@@ -14,8 +14,8 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, String> {
 
-    @Query("SELECT d.name AS name FROM Department d")
-    List<BasicInfoProjection> findAllByName();
+    //@Query("SELECT d.name AS name FROM Department d")
+    List<BasicInfoProjection> findAllBy();
 
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Department d " +

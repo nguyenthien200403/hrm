@@ -3,6 +3,8 @@ package com.example.hrm.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 @Entity
@@ -15,4 +17,7 @@ public class TypeContract {
 
     @Column(name = "ten_loai_hop_dong")
     private String name;
+
+    @OneToMany(mappedBy = "typeContract")
+    private List<Contract> contract;
 }

@@ -3,7 +3,6 @@ package com.example.hrm.repository;
 import com.example.hrm.model.TypeContract;
 import com.example.hrm.projection.BasicInfoProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
