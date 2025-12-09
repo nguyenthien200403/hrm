@@ -75,7 +75,7 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/personal")
+    @GetMapping("/personal/information")
     public ResponseEntity<?> getPersonal(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
@@ -84,7 +84,7 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @PutMapping("/personal")
+    @PutMapping("/personal/information")
     public ResponseEntity<?> update(@Valid @RequestBody EmployeeDTO request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();

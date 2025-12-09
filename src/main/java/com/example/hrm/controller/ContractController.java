@@ -1,12 +1,15 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.model.Account;
 import com.example.hrm.request.ContractRequest;
 import com.example.hrm.service.ContractService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +29,6 @@ public class ContractController {
     public ResponseEntity<?> getAllContractsByEmployeeId(@RequestParam String id){
         GeneralResponse<?> response = contractService.getAllContractsByEmployeeId(id);
         return ResponseEntity.status(response.getStatus()).body(response);
-
     }
 
     @GetMapping("/admin/contracts")
@@ -35,7 +37,7 @@ public class ContractController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/admin/contracts/{id}")
+    @GetMapping("/personal/contracts/{id}")
     public ResponseEntity<?> getDetailsByIdContract(@PathVariable String id){
         GeneralResponse<?> response = contractService.getDetailsByIdContract(id);
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -54,5 +56,13 @@ public class ContractController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/personal/contracts")
+    public ResponseEntity<?> getAllContractsByPersonal(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = contractService.getAllContractsByEmployeeId(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }
