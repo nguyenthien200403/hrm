@@ -33,7 +33,7 @@ public class DepartmentService {
     }
 
     public GeneralResponse<?> getAllByName(){
-        List<BasicInfoProjection> list = departmentRepository.findAllByName();
+        List<BasicInfoProjection> list = departmentRepository.findAllBy();
         if(list.isEmpty()) {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }

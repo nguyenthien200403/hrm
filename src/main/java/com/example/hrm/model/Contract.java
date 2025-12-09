@@ -46,4 +46,6 @@ public class Contract {
     @ManyToOne
     @JoinColumn(name = "id_loai_hop_dong")
     private TypeContract typeContract;
+
+
 }
