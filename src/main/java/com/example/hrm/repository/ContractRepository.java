@@ -23,7 +23,8 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
             "WHERE (:signed = true AND c.dateSign IS NOT NULL) " +
             "   OR (:signed = false AND c.dateSign IS NULL) " +
             "   AND (c.typeContract.name = :type)")
-    List<ContractProjection> findAllByDateSignAndType(@Param("signed") boolean signed, @Param("type") String type);
+    List<ContractProjection> findAllByDateSignAndType(@Param("signed") boolean signed,
+                                                      @Param("type") String type);
 
 
 

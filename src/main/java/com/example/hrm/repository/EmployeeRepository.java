@@ -1,9 +1,10 @@
 package com.example.hrm.repository;
 
 import com.example.hrm.model.Employee;
+import com.example.hrm.projection.BasicInfoProjection;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import com.example.hrm.projection.EmployeeProjection;
@@ -35,31 +36,36 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
     Optional<Employee> findById(@NonNull String id);
 
 
-    @Query("SELECT e.id AS id," +
-            " e.name AS name," +
-            " e.email AS email," +
-            " e.gender AS gender " +
-            "FROM Employee e " +
-            "WHERE (:status = '1' AND e.department.name = :name)")
-    List<EmployeeProjection> findAllByStatusAndDepartment(@Param("status") String status,
-                                                          @Param("name") String name);
+    //fix
+    @Query("""
+            SELECT e.id as id, e.name as name,
+                   (SELECT c.position FROM Contract c WHERE c.employee = e ORDER BY c.dateBegin DESC LIMIT 1) as position,
+                   d.name as department
+            FROM Employee e
+            JOIN e.department d
+            WHERE e.status = :status AND d.name = :departmentName
+            """)
+    List<EmployeeProjection> findByStatusAndDepartment(@Param("status") String status,
+                                                       @Param("departmentName") String departmentName);
 
-    List<EmployeeProjection> findAllByStatus(String status);
+
+    @Query("SELECT emp.name as name FROM Employee as emp WHERE emp.status = '2'")
+    List<BasicInfoProjection> findAllProcessing();
 
 
-    @Query("SELECT e.id AS id, " +
-            "e.name AS name, " +
-            "e.email AS email, " +
-            "e.gender AS gender " +
-            "FROM Employee e " +
-            "WHERE ( " +
-            "  LOWER(e.id) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "  LOWER(e.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            ") " +
-            "AND (e.department.name = :name)" +
-            "AND (e.status = :status)")
-    List<EmployeeProjection> searchEmployeesBy(@Param("keyword") String keyword,
-                                               @Param("name") String name,
-                                               @Param("status") String status);
+//    @Query("SELECT e.id AS id, " +
+//            "e.name AS name, " +
+//            "e.email AS email, " +
+//            "e.gender AS gender " +
+//            "FROM Employee e " +
+//            "WHERE ( " +
+//            "  LOWER(e.id) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+//            "  LOWER(e.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+//            ") " +
+//            "AND (e.department.name = :name)" +
+//            "AND (e.status = :status)")
+//    List<EmployeeProjection> searchEmployeesBy(@Param("keyword") String keyword,
+//                                               @Param("name") String name,
+//                                               @Param("status") String status);
 
 }
