@@ -74,9 +74,9 @@ public class Employee {
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private Account account;
-//
-//    @OneToMany(mappedBy = "employee")
-//    private List<Contract> contracts;
+
+    @OneToMany(mappedBy = "employee")
+    private List<Contract> contracts;
 
 
     @Override

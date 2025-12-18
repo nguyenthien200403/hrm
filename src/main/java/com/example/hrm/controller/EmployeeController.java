@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 public class EmployeeController {
-
-
     private final EmployeeService employeeService ;
-    private final JwtService jwtService;
 
     @PostMapping("/individuals")
     public ResponseEntity<?> create(@Valid @RequestBody EmployeeRequest request){
@@ -53,6 +50,13 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/admin/employees-processing")
+    private ResponseEntity<?> getAllEmployeeProcessing(){
+        GeneralResponse<?> response = employeeService.getAllEmployeeProcessing();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
 
     @GetMapping("/admin/employees")
     public ResponseEntity<?> getAllByStatusAndDepartment(@RequestParam String status,
@@ -61,13 +65,13 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/admin/employees/search")
-    public ResponseEntity<?> searchEmployeesBy(@RequestParam String keyword,
-                                               @RequestParam String name,
-                                               @RequestParam String status){
-        GeneralResponse<?> response = employeeService.searchEmployeesBy(keyword, name, status);
-        return ResponseEntity.status(response.getStatus()).body(response);
-    }
+//    @GetMapping("/admin/employees/search")
+//    public ResponseEntity<?> searchEmployeesBy(@RequestParam String keyword,
+//                                               @RequestParam String name,
+//                                               @RequestParam String status){
+//        GeneralResponse<?> response = employeeService.searchEmployeesBy(keyword, name, status);
+//        return ResponseEntity.status(response.getStatus()).body(response);
+//    }
 
     @PutMapping("/admin/employees/resign/{id}")
     public ResponseEntity<?> resign(@PathVariable String id){

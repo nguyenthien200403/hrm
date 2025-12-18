@@ -23,6 +23,8 @@ public class EmployeeDTO {
     private Boolean gender;
     private LocalDate birthDate;
 
+    private boolean hasAccount;
+
     @Email(message = "Email is not in the correct format")
     @NotBlank(message = "Not Null")
     private String email;
@@ -41,6 +43,8 @@ public class EmployeeDTO {
     @NotBlank(message = "NOT NULL")
     private String statusMarital;
 
+    private String position;
+
     private BigDecimal wage;
 
     private String nameDepart;
@@ -56,27 +60,4 @@ public class EmployeeDTO {
 
     @Valid
     private BankDTO bank;
-
-//    public EmployeeDTO(Employee employee) {
-//        this.id = employee.getId();
-//        this.name = employee.getName();
-//        this.email = employee.getEmail();
-//        this.birthDate = employee.getBirthDate();
-//        this.phone = employee.getPhone();
-//        this.gender = employee.getGender();
-//        this.nation = employee.getNation();
-//        this.ethnic = employee.getEthnic();
-//        this.habit = employee.getHabit() != null ? employee.getHabit() : "";
-//        this.statusMarital = employee.getStatusMarital();
-//        this.wage = employee.getWage() != null ? employee.getWage() : BigDecimal.valueOf(0);
-//        this.nameDepart = employee.getDepartment() != null ? employee.getDepartment().getName() : "";
-//        this.identification = employee.getIdentification() != null ? new IdentificationDTO(employee.getIdentification()) : null;
-//        this.addresses = employee.getAddresses() != null
-//                ? employee.getAddresses().stream().map(AddressDTO:: new).collect(Collectors.toList())
-//                : new ArrayList<>();
-//        this.relatives = employee.getRelatives() != null
-//                ? employee.getRelatives().stream().map(RelativeDTO::new).collect(Collectors.toList())
-//                : new ArrayList<>();
-//        this.bank = employee.getBank() != null ? new BankDTO(employee.getBank()) : null;
-//    }
 }
