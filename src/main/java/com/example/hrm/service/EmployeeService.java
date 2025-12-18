@@ -3,6 +3,7 @@ package com.example.hrm.service;
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.*;
 import com.example.hrm.model.*;
+import com.example.hrm.projection.BasicInfoProjection;
 import com.example.hrm.projection.EmployeeMapper;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.*;
@@ -51,35 +52,34 @@ public class EmployeeService {
     }
 
 
+    public GeneralResponse<?> getAllEmployeeProcessing(){
+        List<BasicInfoProjection> list = employeeRepository.findAllProcessing();
+        if(list.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "List Processing", list);
 
+    }
+
+
+
+    //fix
     public GeneralResponse<?> getAllByStatusAndDepartment(String status, String name){
-        List<EmployeeProjection> list;
-
-        if ("1".equals(status)) {
-            // Trạng thái làm việc → cần lọc theo phòng ban
-            if (name == null || name.isBlank()) {
-                return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Name Department Not Null", null);
-            }
-            list = employeeRepository.findAllByStatusAndDepartment(status, name);
-        } else {
-            // Trạng thái khác → không cần lọc phòng ban
-            list = employeeRepository.findAllByStatus(status);
-        }
-
+        List<EmployeeProjection> list = employeeRepository.findByStatusAndDepartment(status, name);
         if (list.isEmpty()) {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
         return new GeneralResponse<>(HttpStatus.OK.value(), "List Employee", list);
     }
 
-    public GeneralResponse<?> searchEmployeesBy(String keyword, String name, String status){
-        List<EmployeeProjection> list = employeeRepository.searchEmployeesBy(keyword, name, status);
-
-        if (list.isEmpty()) {
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
-        }
-        return new GeneralResponse<>(HttpStatus.OK.value(), "List Employee", list);
-    }
+//    public GeneralResponse<?> searchEmployeesBy(String keyword, String name, String status){
+//        List<EmployeeProjection> list = employeeRepository.searchEmployeesBy(keyword, name, status);
+//
+//        if (list.isEmpty()) {
+//            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+//        }
+//        return new GeneralResponse<>(HttpStatus.OK.value(), "List Employee", list);
+//    }
 
 
 
@@ -285,6 +285,7 @@ public class EmployeeService {
                 if (account != null) {
                     account.setStatus(false);
                 }
+
                 employeeRepository.save(employee);
                 return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Resignation Confirmation", null);
         }
@@ -292,45 +293,47 @@ public class EmployeeService {
 
     @Transactional
     public GeneralResponse<?> update(String id, EmployeeDTO request){
+
         Optional<Employee> findResult = employeeRepository.findById(id);
 
         if(findResult.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee with Id: " + id, null);
         }
 
+        Employee existingEmployee = findResult.get();
 
-        Employee updateEntity = employeeMapper.toEntity(request);
+        employeeMapper.updateEntityFromDto(request, existingEmployee);
 
-        updateEntity.setId(id);
 
-        if(updateEntity.getIdentification() != null){
-            updateEntity.getIdentification().setEmployee(updateEntity);
+        if(request.getIdentification() != null && existingEmployee.getBank() != null){
+           employeeMapper.updateIdentificationFromDto(request.getIdentification(), existingEmployee.getIdentification());
         }
 
-        // --- Quan hệ 1-N: xóa rồi insert lại ---
-        updateEntity.getAddresses().clear();
         if (request.getAddresses() != null) {
-            request.getAddresses().forEach(adDto -> {
-                Address ad = employeeMapper.toEntity(adDto);
-                ad.setEmployee(updateEntity);
-                updateEntity.getAddresses().add(ad);
-            });
-        }
+            for (AddressDTO adDto : request.getAddresses()) {
+                existingEmployee.getAddresses().stream()
+                        .filter(a -> a.getAddressType().equals(adDto.getAddressType()))
+                        .findFirst().ifPresent(existing -> employeeMapper.updateAddressFromDto(adDto, existing));
 
-        updateEntity.getRelatives().clear();
+            }
+        }
         if (request.getRelatives() != null) {
-            request.getRelatives().forEach(rDto -> {
-                Relatives r = employeeMapper.toEntity(rDto);
-                r.setEmployee(updateEntity);
-                updateEntity.getRelatives().add(r);
-            });
+            for (RelativeDTO reDto : request.getRelatives()) {
+                existingEmployee.getRelatives().stream()
+                        .filter(r -> r.getName().equals(reDto.getName())
+                                && r.getRelation().equals(reDto.getRelation()))
+                        .findFirst().ifPresent(existing -> employeeMapper.updateRelativeFromDto(reDto, existing));
+
+            }
         }
 
-        if(updateEntity.getBank() != null){
-            updateEntity.getBank().setEmployee(updateEntity);
+
+        if (request.getBank() != null && existingEmployee.getBank() != null) {
+            employeeMapper.updateBankFromDto(request.getBank(), existingEmployee.getBank());
         }
 
-       Employee saved = employeeRepository.save(updateEntity);
+
+        Employee saved = employeeRepository.save(existingEmployee);
 
         return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Update ", employeeMapper.toDto(saved));
     }
