@@ -150,17 +150,17 @@ public class EmployeeService {
 
     private static Employee convertToEmployee(EmployeeRequest request, String id) {
         Employee employee = Employee.builder()
-                .id(id)
-                .name(request.getName())
-                .gender(request.getGender())
-                .birthDate(request.getBirthDate())
-                .email(request.getEmail())
-                .nation(request.getNation())
-                .ethnic(request.getEthnic())
-                .phone(request.getPhone())
-                .habit(request.getHabit())
-                .statusMarital(request.getStatusMarital())
-                .build();
+                            .id(id)
+                            .name(request.getName())
+                            .gender(request.getGender())
+                            .birthDate(request.getBirthDate())
+                            .email(request.getEmail())
+                            .nation(request.getNation())
+                            .ethnic(request.getEthnic())
+                            .phone(request.getPhone())
+                            .habit(request.getHabit())
+                            .statusMarital(request.getStatusMarital())
+                            .build();
 
         employee.setIdentification(mapIdentification(request.getIdentification(), employee));
         employee.setAddresses(mapAddress(request.getAddress(), employee));
