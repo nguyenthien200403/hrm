@@ -21,8 +21,8 @@ public class TypeContractController {
     }
 
     @PostMapping("/admin/contract-types")
-    public ResponseEntity<?> create(@RequestParam String name){
-        GeneralResponse<?> response = service.create(name);
+    public ResponseEntity<?> create(@RequestParam String name, @RequestParam Boolean hasSalary){
+        GeneralResponse<?> response = service.create(name, hasSalary);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

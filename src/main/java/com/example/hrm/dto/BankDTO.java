@@ -27,13 +27,13 @@ public class BankDTO {
     @NotBlank(message = "Not Null")
     private String province;
 
-    public BankDTO(Bank bank){
-        this.nameBank = bank.getNameBank();
-        this.agent = bank.getAgent();
-        this.nameAccountBank = bank.getNameAccountBank();
-        this.numberAccountBank = bank.getNumberAccountBank();
-        this.numberRout = bank.getNumberRout();
-        this.province = bank.getProvince();
-    }
+//    public BankDTO(Bank bank){
+//        this.nameBank = bank.getNameBank();
+//        this.agent = bank.getAgent();
+//        this.nameAccountBank = bank.getNameAccountBank();
+//        this.numberAccountBank = bank.getNumberAccountBank();
+//        this.numberRout = bank.getNumberRout();
+//        this.province = bank.getProvince();
+//    }
 
 }

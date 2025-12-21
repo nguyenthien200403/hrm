@@ -23,9 +23,9 @@ public class IdentificationDTO {
     @NotBlank(message = "Not Null")
     private String place;
 
-    public IdentificationDTO(Identification identification){
-        this.id = identification.getId();
-        this.date = identification.getDate();
-        this.place = identification.getPlace();
-    }
+//    public IdentificationDTO(Identification identification){
+//        this.id = identification.getId();
+//        this.date = identification.getDate();
+//        this.place = identification.getPlace();
+//    }
 }
