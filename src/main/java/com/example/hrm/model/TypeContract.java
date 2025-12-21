@@ -18,6 +18,9 @@ public class TypeContract {
     @Column(name = "ten_loai_hop_dong")
     private String name;
 
+    @Column(name = "co_luong")
+    private Boolean hasSalary;
+
     @OneToMany(mappedBy = "typeContract")
     private List<Contract> contract;
 }

@@ -48,4 +48,11 @@ public class Contract {
     private TypeContract typeContract;
 
 
+    @Override
+    public String toString() {
+        return "Contract{" +
+                "id='" + id + '\'' +
+                ", position='" + position + '\'' +
+                '}';
+    }
 }

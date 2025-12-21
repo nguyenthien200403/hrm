@@ -53,7 +53,7 @@ public class EmployeeService {
 
 
     public GeneralResponse<?> getAllEmployeeProcessing(){
-        List<BasicInfoProjection> list = employeeRepository.findAllProcessing();
+        List<EmployeeProjection> list = employeeRepository.findAllProcessing();
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }

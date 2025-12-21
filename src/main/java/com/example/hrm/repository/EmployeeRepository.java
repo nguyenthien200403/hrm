@@ -1,7 +1,7 @@
 package com.example.hrm.repository;
 
 import com.example.hrm.model.Employee;
-import com.example.hrm.projection.BasicInfoProjection;
+
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -49,8 +49,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
                                                        @Param("departmentName") String departmentName);
 
 
-    @Query("SELECT emp.name as name FROM Employee as emp WHERE emp.status = '2'")
-    List<BasicInfoProjection> findAllProcessing();
+    @Query("SELECT emp.id  as id," +
+            " emp.name as name " +
+            "FROM Employee as emp WHERE emp.status = '2'")
+    List<EmployeeProjection> findAllProcessing();
 
 
 //    @Query("SELECT e.id AS id, " +

@@ -30,11 +30,11 @@ public class RelativeDTO {
     @NotNull(message = "NOT NULL")
     private Boolean gender;
 
-    public RelativeDTO(Relatives relatives){
-        this.name = relatives.getName();
-        this.dateOfBirth = relatives.getDateOfBirth();
-        this.gender = relatives.getGender();
-        this.relation = relatives.getRelation();
-        this.phone = relatives.getPhone();
-    }
+//    public RelativeDTO(Relatives relatives){
+//        this.name = relatives.getName();
+//        this.dateOfBirth = relatives.getDateOfBirth();
+//        this.gender = relatives.getGender();
+//        this.relation = relatives.getRelation();
+//        this.phone = relatives.getPhone();
+//    }
 }

@@ -24,11 +24,11 @@ public class AddressDTO {
     @NotBlank(message = "Not Null")
     private String province;
 
-    public AddressDTO(Address address){
-        this.addressType = address.getAddressType();
-        this.street = address.getStreet();
-        this.ward = address.getWard();
-        this.district = address.getDistrict();
-        this.province = address.getProvince();
-    }
+//    public AddressDTO(Address address){
+//        this.addressType = address.getAddressType();
+//        this.street = address.getStreet();
+//        this.ward = address.getWard();
+//        this.district = address.getDistrict();
+//        this.province = address.getProvince();
+//    }
 }

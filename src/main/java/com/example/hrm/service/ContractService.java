@@ -10,10 +10,17 @@ import com.example.hrm.repository.ContractRepository;
 import com.example.hrm.repository.EmployeeRepository;
 import com.example.hrm.repository.TypeContractRepository;
 import com.example.hrm.request.ContractRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -78,7 +85,9 @@ public class ContractService {
         return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
     }
 
+    @Transactional(readOnly = true)
     public GeneralResponse<?> getAllByDateSignAndType(boolean signed, String type){
+
         List<ContractProjection> list = contractRepository.findAllByDateSignAndType(signed, type);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
@@ -130,6 +139,32 @@ public class ContractService {
         }
 
         return new GeneralResponse<>(HttpStatus.OK.value(), "Successful Search", list);
+    }
+
+    public GeneralResponse<?> confirmContract(String id){
+        Optional<Contract> findResult = contractRepository.findById(id);
+        if(findResult.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Contract", null);
+        }
+
+        Contract contract = findResult.get();
+        TypeContract typeContract = contract.getTypeContract();
+
+        if(Boolean.TRUE.equals(typeContract.getHasSalary()) && contract.getSalary() != null){
+            Employee employee = contract.getEmployee();
+            employee.setWage(calculateWage(contract.getSalary()));
+            employeeRepository.save(employee);
+        }
+        contract.setDateSign(LocalDateTime.now());
+        contractRepository.save(contract);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Contract Confirmed Successfully", null);
+
+    }
+
+    private BigDecimal calculateWage(BigDecimal salary){
+        BigDecimal hoursPerMonth = BigDecimal.valueOf(22 * 8);
+        return salary.divide(hoursPerMonth, RoundingMode.HALF_UP);
     }
 
 }

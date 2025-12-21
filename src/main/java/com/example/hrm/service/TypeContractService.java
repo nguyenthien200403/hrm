@@ -26,15 +26,16 @@ public class TypeContractService {
         return new GeneralResponse<>(HttpStatus.OK.value(), "Contract type", list);
     }
 
-    public GeneralResponse<?> create(String name){
+    public GeneralResponse<?> create(String name, Boolean hasSalary){
         Optional<TypeContract> findResult = repository.findByName(name);
         if(findResult.isPresent()){
             return new GeneralResponse<>(HttpStatus.CONFLICT.value(), "Existed Name", null);
         }
         TypeContract typeContract = new TypeContract();
         typeContract.setName(name);
+        typeContract.setHasSalary(hasSalary);
 
         repository.save(typeContract);
-        return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", name);
+        return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", null);
     }
 }

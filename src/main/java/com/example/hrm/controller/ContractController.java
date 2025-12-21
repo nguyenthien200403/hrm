@@ -65,4 +65,10 @@ public class ContractController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @PutMapping("personal/contracts/{id}")
+    public ResponseEntity<?> confirmContract(@PathVariable String id){
+        GeneralResponse<?> response = contractService.confirmContract(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 }
