@@ -37,7 +37,7 @@ public class RecruitmentService {
             Recruitment recruitment = findResult.get();
             LocalDate oneWeekLater = LocalDate.now().plusDays(7);
             LocalDate recruitmentDate = recruitment.getDate();
-            if(!recruitment.getStatus() || !recruitmentDate.isAfter(oneWeekLater)){
+            if(!recruitment.getStatus() || recruitmentDate.isAfter(oneWeekLater)){
                 return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Email Not Found",null);
             }
             RecruitmentDTO dto = new RecruitmentDTO(recruitment);

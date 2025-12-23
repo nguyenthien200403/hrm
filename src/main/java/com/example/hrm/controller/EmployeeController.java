@@ -4,7 +4,6 @@ import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.EmployeeDTO;
 import com.example.hrm.model.Account;
 import com.example.hrm.request.EmployeeRequest;
-import com.example.hrm.security.JwtService;
 import com.example.hrm.service.EmployeeService;
 
 import jakarta.validation.Valid;
@@ -38,6 +37,12 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @DeleteMapping("/admin/refusals/{id}")
+    public ResponseEntity<?> refuseEmployee(@PathVariable String id){
+        GeneralResponse<?> response = employeeService.refuseEmployee(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @GetMapping("/admin/employees/amount-active")
     public ResponseEntity<?> amountEmployeeActive(){
         GeneralResponse<?> response = employeeService.amountEmployeeByStatus("1", "Amount Employee Active");
@@ -51,7 +56,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/admin/employees-processing")
-    private ResponseEntity<?> getAllEmployeeProcessing(){
+    public ResponseEntity<?> getAllEmployeeProcessing(){
         GeneralResponse<?> response = employeeService.getAllEmployeeProcessing();
         return ResponseEntity.status(response.getStatus()).body(response);
     }

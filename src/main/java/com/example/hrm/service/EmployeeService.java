@@ -95,17 +95,17 @@ public class EmployeeService {
         int status = HttpStatus.CONFLICT.value();
 
         if(employeeRepository.existById(id)){
-            return new GeneralResponse<>(status, "Existed Id", null);
+            return new GeneralResponse<>(status, "Existed Id: " + id, null);
         }
         if(employeeRepository.existsByEmail(request.getEmail())){
-            return new GeneralResponse<>(status, "Existed Email", null);
+            return new GeneralResponse<>(status, "Existed Email: " + request.getEmail(), null);
         }
         if (employeeRepository.existsByPhone(request.getPhone())){
-            return new GeneralResponse<>(status, "Existed Phone", null);
+            return new GeneralResponse<>(status, "Existed Phone: " + request.getPhone(), null);
         }
         Optional<Identification> findResult = identificationRepository.findById(request.getIdentification().getId());
         if (findResult.isPresent()){
-            return new GeneralResponse<>(status, "Existed Identification", null);
+            return new GeneralResponse<>(status, "Existed Identification: " + request.getIdentification(), null);
         }
         return null;
     }
@@ -238,6 +238,17 @@ public class EmployeeService {
 
         return new GeneralResponse<>(HttpStatus.OK.value(), "Success", null);
     }
+
+    public GeneralResponse<?> refuseEmployee(String id){
+        Optional<Employee> findEmp = employeeRepository.findById(id);
+        if(findEmp.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Not Found Employee with Id: " + id, null);
+        }
+        Employee employee = findEmp.get();
+        employeeRepository.delete(employee);
+        return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Refusal ", null);
+    }
+
 
     private void sendAccountEmail(Employee employee){
 

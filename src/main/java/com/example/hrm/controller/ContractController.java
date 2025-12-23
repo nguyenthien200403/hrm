@@ -25,8 +25,8 @@ public class ContractController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/admin/contracts/employee")
-    public ResponseEntity<?> getAllContractsByEmployeeId(@RequestParam String id){
+    @GetMapping("/admin/{id}/contracts")
+    public ResponseEntity<?> getAllContractsByEmployeeId(@PathVariable String id){
         GeneralResponse<?> response = contractService.getAllContractsByEmployeeId(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
