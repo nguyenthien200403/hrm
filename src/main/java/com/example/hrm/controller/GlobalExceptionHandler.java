@@ -1,55 +1,61 @@
 package com.example.hrm.controller;
 
 
-import com.example.hrm.config.ErrorResponse;
+
+import com.example.hrm.config.GeneralResponse;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex){
-        List<Map<String, String>> errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> {
-                    assert fieldError.getDefaultMessage() != null;
-                    return Map.of(
-                            "field", fieldError.getField(),
-                            "message",fieldError.getDefaultMessage()
-                    );
-                })
-                .collect(Collectors.toList());
-        ErrorResponse response = new ErrorResponse(
+    // Bắt lỗi vi phạm constraint từ DB (UNIQUE, NOT NULL, CHECK, FOREIGN KEY...)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<GeneralResponse<?>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        Throwable rootCause = ex.getMostSpecificCause(); // chỉ có trong DataAccessException
+        String message = rootCause.getMessage();
+
+        GeneralResponse<?> response = new GeneralResponse<>(
                 HttpStatus.BAD_REQUEST.value(),
-                "VALIDATION_ERROR",
-                LocalDateTime.now(),
-                errors);
-        return ResponseEntity.badRequest().body(response);
+                message,
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneralErrors(Exception ex) {
-        ErrorResponse response = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "INTERNAL_ERROR",
-                LocalDateTime.now(),
-                List.of(  Map.of("message", ex.getMessage()),
-                        Map.of("cause", ex.getCause() != null ? ex.getCause().toString() : "null")
-                )
+    // Bắt lỗi validate từ Hibernate Validator (@NotNull, @Size, @Email...)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<GeneralResponse<?>> handleConstraintViolation(ConstraintViolationException ex) {
+        GeneralResponse<?> response = new GeneralResponse<>(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation failed: " + ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 
+    // Bắt lỗi chung (fallback)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GeneralResponse<?>> handleGenericException(Exception ex) {
+        GeneralResponse<?> response = new GeneralResponse<>(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Unexpected error: " + ex.getMessage(),
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
-
 }
+
+
+
+
+
