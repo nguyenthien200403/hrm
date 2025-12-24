@@ -45,7 +45,7 @@ public class ContractController {
     }
 
     @PutMapping("/admin/contracts/{id}")
-    public ResponseEntity<?> update(@PathVariable String id,@Valid @RequestBody ContractRequest request){
+    public ResponseEntity<?> update(@PathVariable String id, @Valid @RequestBody ContractRequest request){
         GeneralResponse<?> response = contractService.update(request, id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

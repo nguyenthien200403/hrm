@@ -55,7 +55,7 @@ public class ImagFolderService {
        return list;
     }
 
-    public GeneralResponse<?> list(String id){
+    public GeneralResponse<?> getImagesByEmployee(String id){
         Optional<Folder> findResult = repository.findByIdEmployee(id);
         if(findResult.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found", null);

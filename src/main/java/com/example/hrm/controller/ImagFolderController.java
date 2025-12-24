@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,15 @@ public class ImagFolderController {
         Account account = (Account) authentication.getPrincipal();
         String id = account.getEmployee().getId();
         GeneralResponse<?> response = service.create(id, files);
+        return  ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/personal/images")
+    public ResponseEntity<?> list() throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getImagesByEmployee(id);
         return  ResponseEntity.status(response.getStatus()).body(response);
     }
 }
