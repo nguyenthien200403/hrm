@@ -7,6 +7,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -27,15 +28,16 @@ public class S3Service {
                     PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(key)
+                            .contentType("image/png")
+                            .acl(ObjectCannedACL.PUBLIC_READ) // 👈 Cho phép public read
                             .build(),
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
         } catch (S3Exception e) {
-
             throw new IOException("Lỗi khi upload lên S3: " + e.awsErrorDetails().errorMessage(), e);
         } catch (IOException e) {
             throw new IOException("Lỗi đọc file để upload lên S3", e);
         }
-
     }
+
 }
