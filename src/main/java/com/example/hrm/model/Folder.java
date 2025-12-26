@@ -30,6 +30,7 @@ public class Folder {
 
     //    @OneToOne
 //    @JoinColumn(name ="id_nhan_vien", unique = true)
+    @Column(name = "id_nhan_vien")
     private String idEmployee;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)

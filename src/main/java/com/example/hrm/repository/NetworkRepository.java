@@ -9,4 +9,6 @@ public interface NetworkRepository extends JpaRepository<Network, Long> {
 
     // Kiểm tra trùng SSID + MAC nhưng loại trừ id (dùng cho update)
     boolean existsBySsidAndMacRouterAndIdNot(String ssid, String macRouter, Long id);
+
+    boolean existsByIpPublic(String ipPublic);
 }
