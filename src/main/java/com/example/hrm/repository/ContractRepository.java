@@ -39,14 +39,17 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     List<ContractProjection> searchContractsBy(@Param("keyword") String keyword,
                                                @Param("type") String type);
 
-    @Query("SELECT c.id AS id, " +
-            "c.typeContract.name AS typeContractName, " +
-            "c.employee.id AS employeeId, " +
-            "c.employee.name AS employeeName, " +
-            "c.position AS position " +
-            "FROM Contract c " +
-            "WHERE c.employee.id = :idEmployee " +
-            "ORDER BY c.dateBegin DESC")
+//    @Query("SELECT c.id AS id, " +
+//            "c.typeContract.name AS typeContractName, " +
+//            "c.employee.id AS employeeId, " +
+//            "c.employee.name AS employeeName, " +
+//            "c.position AS position, " +
+//            "c.dateSign AS dateSign " +
+//            "FROM Contract c " +
+//            "WHERE c.employee.id = :idEmployee " +
+//            "ORDER BY c.dateBegin DESC")
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_FindAllByEmployeeId")
     List<ContractProjection> findAllByEmployeeId(@Param("idEmployee") String idEmployee);
 
     @Query(value = "SELECT dbo.fn_CheckContractResign(:employeeId, :nameType)", nativeQuery = true)
