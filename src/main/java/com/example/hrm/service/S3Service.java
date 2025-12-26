@@ -29,7 +29,7 @@ public class S3Service {
                             .bucket(bucketName)
                             .key(key)
                             .contentType("image/png")
-                            .acl(ObjectCannedACL.PUBLIC_READ) // 👈 Cho phép public read
+                            //.acl(ObjectCannedACL.PUBLIC_READ) // 👈 Cho phép public read
                             .build(),
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
