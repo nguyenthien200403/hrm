@@ -36,7 +36,6 @@ public class TimeTrackerService {
                     return existing;
                 })
                 .orElseGet(() -> TimeTracker.builder()
-                        .id(1L)
                         .startTime(dto.getStart())
                         .endTime(dto.getEnd())
                         .note(dto.getNote())

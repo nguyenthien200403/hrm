@@ -77,6 +77,7 @@ public class ContractService {
         return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", dto);
     }
 
+    @Transactional(readOnly = true)
     public GeneralResponse<?> getAllContractsByEmployeeId(String id){
         List<ContractProjection> list = contractRepository.findAllByEmployeeId(id);
         if(list.isEmpty()){
@@ -87,7 +88,6 @@ public class ContractService {
 
     @Transactional(readOnly = true)
     public GeneralResponse<?> getAllByDateSignAndType(boolean signed, String type){
-
         List<ContractProjection> list = contractRepository.findAllByDateSignAndType(signed, type);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
