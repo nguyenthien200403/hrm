@@ -1,4 +1,4 @@
-package com.example.hrm.projection;
+package com.example.hrm.mapper;
 
 import com.example.hrm.dto.*;
 import com.example.hrm.model.*;
