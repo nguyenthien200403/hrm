@@ -12,7 +12,6 @@ import com.example.hrm.repository.TimeTrackerRepository;
 import com.example.hrm.request.AttendanceRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -43,11 +42,25 @@ public class AttendanceService {
             return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "Weekend - cannot Check-in.", null);
         }
 
+        TimeTracker timeTracker = timeTrackerRepository.findById(1L)
+                .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
+        LocalTime timeNow = LocalTime.now();
+
+        if(timeNow.isAfter(timeTracker.getEndTime())){
+            return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "The workday is over.", null);
+        }
+
         List<AttendanceProjection> list = attendanceRepository.findByIdEmployeeAndDateWork(id, date);
 
         if(!list.isEmpty()){
+            LocalTime end = list.get(0).getTimeOut();
+            if(end != null){
+                return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "You have completed Check-out", null);
+            }
+
             String idAttendance = list.get(0).getId();
-            return new GeneralResponse<>(HttpStatus.CONFLICT.value(), "You have completed Check-in.", idAttendance);
+            return new GeneralResponse<>(HttpStatus.CONFLICT.value(), "You have completed Check-in", idAttendance);
+
         }
 
         return new GeneralResponse<>(HttpStatus.OK.value(), "You can Check-in.", null);
@@ -68,12 +81,18 @@ public class AttendanceService {
     }
 
     //Check-out
-    public GeneralResponse<?> checkOut(String id, LocalTime end){
+    public GeneralResponse<?> checkOut(String id, LocalTime endRequest){
         Optional<Attendance> findResult = attendanceRepository.findById(id);
         if(findResult.isEmpty()){
             return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "You must Check-in", null);
         }
         Attendance attendance = findResult.get();
+
+        if(attendance.getTimeOut() != null){
+            return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "You have completed Check-out", null);
+        }
+
+        LocalTime end = setTimeEnd(endRequest);
         attendance.setTimeOut(end);
         BigDecimal totalTime = totalTime(attendance.getTimeIn(), end);
         attendance.setTotalTime(totalTime);
@@ -81,6 +100,15 @@ public class AttendanceService {
         attendanceRepository.save(attendance);
         return new GeneralResponse<>(HttpStatus.OK.value(), "Check-Out Successful", totalTime);
     }
+
+    private LocalTime setTimeEnd(LocalTime end) {
+        TimeTracker timeTracker = timeTrackerRepository.findById(1L)
+                .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
+
+        LocalTime endTracker = timeTracker.getEndTime();
+        return (end.isAfter(endTracker) || end.equals(endTracker)) ? endTracker : end;
+    }
+
 
 
     //Create

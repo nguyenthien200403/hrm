@@ -30,4 +30,5 @@ public class Requirement {
     @ManyToOne
     @JoinColumn(name = "id_loai_yeu_cau")
     private TypeRequirement typeRequirement;
+
 }

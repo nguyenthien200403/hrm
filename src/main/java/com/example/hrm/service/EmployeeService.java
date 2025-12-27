@@ -3,8 +3,8 @@ package com.example.hrm.service;
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.*;
 import com.example.hrm.model.*;
-import com.example.hrm.projection.BasicInfoProjection;
-import com.example.hrm.projection.EmployeeMapper;
+
+import com.example.hrm.mapper.EmployeeMapper;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.*;
 import com.example.hrm.request.EmployeeRequest;
