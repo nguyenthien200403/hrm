@@ -2,11 +2,17 @@ package com.example.hrm.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "YeuCau")
 public class Requirement {
@@ -19,7 +25,7 @@ public class Requirement {
     private String name;
 
     @Column(name = "so_ngay_qui_dinh")
-    private int timeFrame;
+    private Integer timeFrame;
 
     @Column(name = "he_so_tang_ca")
     private BigDecimal overtimeRate;

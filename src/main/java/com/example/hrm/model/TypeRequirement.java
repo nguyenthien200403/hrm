@@ -17,7 +17,7 @@ public class TypeRequirement {
     @Column(name = "ten_loai_yeu_cau")
     private String name;
 
-    @OneToMany(mappedBy = "typeRequirement")
-    private List<Requirement> requirement;
+//    @OneToMany(mappedBy = "typeRequirement")
+//    private List<Requirement> requirements;
 }
 

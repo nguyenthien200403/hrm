@@ -25,4 +25,10 @@ public class TypeRequirementController {
         GeneralResponse<?> response = service.getAllNameTypeRequirement();
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+//    @GetMapping("personal/requirement-types")
+//    private ResponseEntity<?> getAllTypeRequirement(){
+//        GeneralResponse<?> response = service.getAllTypeRequirement();
+//        return ResponseEntity.status(response.getStatus()).body(response);
+//    }
 }
