@@ -6,7 +6,7 @@ import java.time.LocalTime;
 
 public interface AttendanceProjection {
     String getId();
-    LocalDate getDateWor();
+    LocalDate getDateWork();
     LocalTime getTimeIn();
     LocalTime getTimeOut();
     BigDecimal getTotalTime();

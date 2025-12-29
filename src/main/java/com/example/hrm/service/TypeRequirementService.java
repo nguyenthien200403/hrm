@@ -1,6 +1,8 @@
 package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.dto.TypeRequirementDTO;
+import com.example.hrm.mapper.RequirementMapper;
 import com.example.hrm.model.TypeRequirement;
 import com.example.hrm.projection.BasicInfoProjection;
 import com.example.hrm.repository.TypeRequirementRepository;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,4 +39,15 @@ public class TypeRequirementService {
         }
         return new GeneralResponse<>(HttpStatus.OK.value(), "List", list);
     }
+
+//    public GeneralResponse<?> getAllTypeRequirement(){
+//        List<TypeRequirement> list = repository.findAll();
+//        if(list.isEmpty()){
+//            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+//        }
+//        List<TypeRequirementDTO> dto = list.stream()
+//                                            .map(RequirementMapper::toDTO)
+//                                            .toList();
+//        return new GeneralResponse<>(HttpStatus.OK.value(), "List", dto);
+//    }
 }
