@@ -57,5 +57,4 @@ public interface EmployeeMapper {
 
     void updateIdentificationFromDto(IdentificationDTO dto, @MappingTarget Identification entity);
 
-
 }

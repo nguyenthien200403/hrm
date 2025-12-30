@@ -6,11 +6,9 @@ import com.example.hrm.mapper.RequirementMapper;
 import com.example.hrm.model.Requirement;
 import com.example.hrm.model.TypeRequirement;
 import com.example.hrm.repository.RequirementRepository;
-import com.example.hrm.repository.TypeContractRepository;
 import com.example.hrm.repository.TypeRequirementRepository;
 import com.example.hrm.request.RequirementRequest;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +80,7 @@ public class RequirementService {
         }
 
         Optional<Requirement> findResult = requirementRepository.findById(id);
+
         if(findResult.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found  Requirement with Id: " + id, null);
         }
@@ -91,6 +90,7 @@ public class RequirementService {
         requirement.setTimeFrame(request.getTimeFrame());
         requirement.setOvertimeRate(request.getOvertimeRate());
         requirement.setDescribe(request.getDescribe());
+        requirement.setTypeRequirement(type.get());
 
         requirementRepository.save(requirement);
         return new GeneralResponse<>(HttpStatus.OK.value(), "Successful Update", null);

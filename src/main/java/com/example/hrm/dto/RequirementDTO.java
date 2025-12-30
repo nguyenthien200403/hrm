@@ -18,4 +18,5 @@ public class RequirementDTO {
     private Integer timeFrame; // chỉ cho nghỉ phép có lương
     private BigDecimal overtimeRate;
     private String describe;
+    private String nameType;
 }
