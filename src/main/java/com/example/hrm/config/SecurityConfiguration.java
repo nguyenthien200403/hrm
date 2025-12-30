@@ -38,9 +38,8 @@ public class SecurityConfiguration {
              .authorizeHttpRequests(auth -> auth
                  // Public endpoints
                  .requestMatchers("/authentications","/individuals","/confirmations","/forgot-password","/verifications/otp", "/reset-password").permitAll()
-                 .requestMatchers("/admin/**").hasRole("ADMIN")
-//                 .requestMatchers("/auth/admin/**").hasRole("employee")
-
+                 .requestMatchers("/admin/**", "/requirements/{id}/confirm").hasRole("ADMIN")
+                 .requestMatchers("/requirements/{id}/confirm").hasRole("MANAGER")
                  // All other endpoints require authentication
                  .anyRequest().authenticated()
              )

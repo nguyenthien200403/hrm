@@ -1,17 +1,17 @@
 package com.example.hrm.mapper;
 
 import com.example.hrm.dto.RequirementDTO;
-import com.example.hrm.dto.TypeRequirementDTO;
 import com.example.hrm.model.Requirement;
-import com.example.hrm.model.TypeRequirement;
 import org.mapstruct.Mapper;
-
+import org.mapstruct.Mapping;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Mapper(componentModel = "spring")
 public interface RequirementMapper {
+    @Mapping(target = "nameType", source = "typeRequirement.name")
     RequirementDTO toDTO(Requirement requirement);
+
     List<RequirementDTO> toDTOs(List<Requirement> requirements);
 
 //    public static TypeRequirementDTO toDTO(TypeRequirement entity) {
