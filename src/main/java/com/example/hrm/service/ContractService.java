@@ -13,6 +13,7 @@ import com.example.hrm.request.ContractRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,11 @@ public class ContractService {
     public final EmployeeRepository employeeRepository;
     public final TypeContractRepository typeContractRepository;
 
+    @Value("${time.work}")
+    private long TimeWork;
+
+    @Value("${date.work}")
+    private long DateWork;
 
     public String generalId(String idEmployee){
         String last4Digits = idEmployee.substring(idEmployee.length() - 4);
@@ -79,7 +85,7 @@ public class ContractService {
 
     @Transactional(readOnly = true)
     public GeneralResponse<?> getAllContractsByEmployeeId(String id){
-        List<ContractProjection> list = contractRepository.findAllByEmployeeId(id);
+        List<ContractProjection> list = contractRepository.findAllContractsByEmployeeId(id);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
@@ -87,8 +93,8 @@ public class ContractService {
     }
 
     @Transactional(readOnly = true)
-    public GeneralResponse<?> getAllByDateSignAndType(boolean signed, String type){
-        List<ContractProjection> list = contractRepository.findAllByDateSignAndType(signed, type);
+    public GeneralResponse<?> getAllContractsByDateSignAndType(Boolean signed, String type){
+        List<ContractProjection> list = contractRepository.findAllContractsByDateSignAndType(signed, type);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
@@ -163,7 +169,7 @@ public class ContractService {
     }
 
     private BigDecimal calculateWage(BigDecimal salary){
-        BigDecimal hoursPerMonth = BigDecimal.valueOf(22 * 8);
+        BigDecimal hoursPerMonth = BigDecimal.valueOf(DateWork * TimeWork);
         return salary.divide(hoursPerMonth, RoundingMode.HALF_UP);
     }
 

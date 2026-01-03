@@ -12,6 +12,7 @@ import com.example.hrm.repository.TimeTrackerRepository;
 import com.example.hrm.request.AttendanceRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,12 @@ public class AttendanceService {
     private final EmployeeRepository employeeRepository;
     private final TimeTrackerRepository timeTrackerRepository;
 
+    @Value("${time.break}")
+    private int timeBreak;
+
+    @Value("${time.threshold}")
+    private int timeThreshold;
+
     //Kiểm tra nhân viên đã chấm công - Nếu đã chấm công thì trả về id ngày hôm đó
     @Transactional(readOnly = true)
     public GeneralResponse<?> checkDateWork(String id, LocalDate date){
@@ -44,11 +51,17 @@ public class AttendanceService {
 
         TimeTracker timeTracker = timeTrackerRepository.findById(1L)
                 .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
+
         LocalTime timeNow = LocalTime.now();
 
-        if(timeNow.isAfter(timeTracker.getEndTime())){
-            return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "The workday is over.", null);
+        // Lùi giờ bắt đầu về 3 tiếng
+        LocalTime adjustedStartTime = timeTracker.getStartTime().minusHours(3);
+
+        // Kiểm tra ngoài giờ làm (trước adjustedStartTime hoặc sau endTime)
+        if (timeNow.isBefore(adjustedStartTime) || timeNow.isAfter(timeTracker.getEndTime())) {
+            return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "The workday is over", null);
         }
+
 
         List<AttendanceProjection> list = attendanceRepository.findByIdEmployeeAndDateWork(id, date);
 
@@ -142,24 +155,36 @@ public class AttendanceService {
         }
         long minutes = Duration.between(start, end).toMinutes();
         // Ví dụ: trừ đi 120 phút nghỉ trưa
-        long adjusted = minutes - 120;
+        long adjusted = minutes - timeBreak;
         if(adjusted < 0) adjusted = 0;
         return BigDecimal.valueOf(adjusted / 60.0); // giờ dạng thập phân
     }
 
     //AutoCheckout: cron job
-    @Scheduled(cron = "0 0 20 * * MON-FRI") // chạy 18:00 từ thứ 2 đến thứ 6
+    @Scheduled(cron = "0 0 20 * * MON-FRI") // chạy 20:00 từ thứ 2 đến thứ 6
     public void autoCheckOut() {
-       LocalTime endTime = timeTrackerRepository.findById(1L)
-                           .map(TimeTracker :: getEndTime)
-                           .orElse(LocalTime.of(19,0));
+        LocalTime endTime = timeTrackerRepository.findById(1L)
+                .map(TimeTracker::getEndTime)
+                .orElse(LocalTime.of(19,0));
+
+        // Cho phép về sớm 30 phút
+        LocalTime earlyThreshold = endTime.minusMinutes(timeThreshold);
+
         List<Attendance> records = attendanceRepository.findByTimeOutIsNull();
         for (Attendance attendance : records) {
             attendance.setTimeOut(endTime);
             attendance.setTotalTime(totalTime(attendance.getTimeIn(), endTime));
-            attendanceRepository.save(attendance);
+
+            // So sánh với earlyThreshold
+            if (attendance.getTimeOut().isBefore(earlyThreshold)) {
+                attendance.setNote("Về sớm");
+            } else {
+                attendance.setNote("Đúng giờ");
+            }
         }
+        attendanceRepository.saveAll(records);
     }
+
 
 
 

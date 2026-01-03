@@ -6,8 +6,10 @@ import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import com.example.hrm.projection.EmployeeProjection;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -37,14 +39,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
 
     //fix
-    @Query("""
-            SELECT e.id as id, e.name as name,
-                   (SELECT c.position FROM Contract c WHERE c.employee = e ORDER BY c.dateBegin DESC LIMIT 1) as position,
-                   d.name as department
-            FROM Employee e
-            JOIN e.department d
-            WHERE e.status = :status AND d.name = :departmentName
-            """)
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_findAllByStatusAndDepartment")
     List<EmployeeProjection> findByStatusAndDepartment(@Param("status") String status,
                                                        @Param("departmentName") String departmentName);
 

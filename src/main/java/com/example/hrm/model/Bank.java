@@ -34,7 +34,7 @@ public class Bank {
     @Column(name = "ten_tai_khoan")
     private String nameAccountBank;
 
-    @Column(name = "tinh")
+    @Column(name = "dia_chi")
     private String province;
 
     @OneToOne
