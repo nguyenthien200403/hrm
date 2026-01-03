@@ -7,7 +7,7 @@ import com.example.hrm.service.DetailRequirementService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +43,32 @@ public class DetailRequirementController {
         GeneralResponse<?> response = service.confirm(id, note, status);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @GetMapping("/requirements/confirm")
+    private ResponseEntity<?> getAllDetailRequirementWithStatusAndDateConfirm(){
+        GeneralResponse<?> response = service.getAllDetailRequirementWithStatusAndDateConfirm();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/personal/requirements-detail/amount")
+    private ResponseEntity<?> amountDetailRequirementByDateAndEmployee(@RequestParam int month, @RequestParam int year){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.amountDetailRequirementByDateAndEmployee(id, month, year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/personal/requirements-detail")
+    private ResponseEntity<?> getAllDetailRequirementByEmployee(@RequestParam String status, @RequestParam String nameType,
+                                                                @RequestParam int month, @RequestParam int year){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAllDetailRequirementByEmployee(id, status, nameType,month, year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
 
 }

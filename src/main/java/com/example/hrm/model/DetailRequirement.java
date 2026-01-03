@@ -26,6 +26,9 @@ public class DetailRequirement {
     @Column(name = "ngay_gui")
     private LocalDateTime dateSend = LocalDateTime.now();
 
+    @Column(name = "ngay_duyet")
+    private LocalDateTime dateConfirm;
+
     @Column(name = "ngay_bat_dau")
     private LocalDate dateBegin;
 
@@ -36,7 +39,7 @@ public class DetailRequirement {
     private BigDecimal amountHour;
 
     @Column(name = "so_ngay_dang_ky")
-    private int amountDate;
+    private Integer amountDate;
 
     @Builder.Default
     @Column(name = "trang_thai")

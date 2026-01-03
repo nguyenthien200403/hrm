@@ -12,13 +12,16 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,6 +31,8 @@ public class RecruitmentService {
     private final RecruitmentRepository recruitmentRepository;
     private final EmailService emailService;
 
+    @Value("${date.duration}")
+    private Integer DURATION;
 
     private static final Logger logger = LoggerFactory.getLogger(RecruitmentService.class);
 
@@ -35,7 +40,7 @@ public class RecruitmentService {
         Optional<Recruitment> findResult = recruitmentRepository.findByEmail(email);
         if(findResult.isPresent()){
             Recruitment recruitment = findResult.get();
-            LocalDate oneWeekLater = LocalDate.now().plusDays(7);
+            LocalDate oneWeekLater = LocalDate.now().plusDays(DURATION);
             LocalDate recruitmentDate = recruitment.getDate();
             if(!recruitment.getStatus() || recruitmentDate.isAfter(oneWeekLater)){
                 return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),"Email Not Found",null);
@@ -70,6 +75,7 @@ public class RecruitmentService {
         }
     }
 
+    //Fix: đính kèm đường link
     private void sendRecruitment(Recruitment recruitment){
         String subject = "THÔNG BÁO KẾT QUẢ PHỎNG VẤN";
         String body = "Công ty StuTeach xin chân thành cảm ơn bạn đã tham gia buổi phỏng vấn vừa qua.\n" +
@@ -78,6 +84,8 @@ public class RecruitmentService {
                 " Chúng tôi tin rằng với năng lực và tinh thần làm việc của bạn, bạn sẽ đóng góp tích cực cho sự phát triển của công ty.\n" +
                 "\n" +
                 "Bạn hãy truy cập đường link bên dưới để hoàn tất thủ thục gia nhập.\n" +
+                "\n" +
+                "Thời hạn là " + DURATION + " ngày kể từ khi nhận được thông báo để hoàn tất thủ tục\n" +
                 "\n" +
                 "Trân trọng, \n" +
                 "StuTeach";
@@ -90,4 +98,16 @@ public class RecruitmentService {
 
         emailService.sendSimpleMail(emailDetails);
     }
+
+    @Scheduled(cron = "0 0 1 1 * ?")
+    public void updateExpiredEntities() {
+        LocalDate thresholdDate = LocalDate.now().minusDays(10);
+        List<Recruitment> records = recruitmentRepository.findExpiredRecruitment(thresholdDate);
+        for (Recruitment entity : records) {
+            entity.setStatus(false); // đổi trạng thái
+        }
+        recruitmentRepository.saveAll(records);
+        System.out.println("Cron job executed: updated expired Recruitment");
+    }
+
 }

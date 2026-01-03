@@ -64,6 +64,7 @@ public class EmployeeService {
 
 
     //fix
+    @Transactional
     public GeneralResponse<?> getAllByStatusAndDepartment(String status, String name){
         List<EmployeeProjection> list = employeeRepository.findByStatusAndDepartment(status, name);
         if (list.isEmpty()) {

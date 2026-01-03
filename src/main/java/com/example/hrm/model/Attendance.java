@@ -28,10 +28,10 @@ public class Attendance {
     @Column(name ="ngay_lam_viec")
     private LocalDate dateWork;
 
-    @Column(name = "gio_vao_thuc_te")
+    @Column(name = "gio_vao")
     private LocalTime timeIn;
 
-    @Column(name = "gio_ra_thuc_te")
+    @Column(name = "gio_ra")
     private LocalTime timeOut;
 
     @Column(name = "tong_gio_lam")

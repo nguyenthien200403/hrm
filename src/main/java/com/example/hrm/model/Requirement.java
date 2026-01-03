@@ -24,7 +24,7 @@ public class Requirement {
     @Column(name = "ten_yeu_cau")
     private String name;
 
-    @Column(name = "so_ngay_qui_dinh")
+    @Column(name = "so_ngay")
     private Integer timeFrame;
 
     @Column(name = "he_so_tang_ca")
