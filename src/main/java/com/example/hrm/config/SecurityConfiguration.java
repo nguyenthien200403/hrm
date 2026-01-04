@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                  // Public endpoints
                  .requestMatchers("/authentications","/individuals","/confirmations","/forgot-password","/verifications/otp", "/reset-password").permitAll()
                  .requestMatchers("/admin/**", "/requirements/**").hasRole("ADMIN")
-                 .requestMatchers("/requirements/**").hasRole("MANAGER")
+                 .requestMatchers("/requirements/**","/manager/**").hasRole("MANAGER")
                  // All other endpoints require authentication
                  .anyRequest().authenticated()
              )

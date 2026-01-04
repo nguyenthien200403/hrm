@@ -40,6 +40,9 @@ public class Attendance {
     @Column(name ="ghi_chu")
     private String note;
 
+    @Column(name = "trang_thai")
+    private String status;
+
     @Column(name = "id_nhan_vien")
     private String idEmployee;
 

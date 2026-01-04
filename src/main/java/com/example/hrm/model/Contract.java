@@ -30,7 +30,7 @@ public class Contract {
     @Column(name = "luong_thoa_thuan")
     private BigDecimal salary;
 
-    @Column(name = "thoi_han_hop_dong")
+    @Column(name = "thoi_han")
     private int term;
 
     @Column(name = "ngay_ky")

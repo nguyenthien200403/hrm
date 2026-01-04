@@ -10,5 +10,6 @@ public interface AttendanceProjection {
     LocalTime getTimeIn();
     LocalTime getTimeOut();
     BigDecimal getTotalTime();
+    String getStatus();
     String getNote();
 }

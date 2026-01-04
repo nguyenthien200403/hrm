@@ -14,7 +14,7 @@ public class DetailRequirementRequest {
 
     private LocalDate dateEnd;
 
-    private BigDecimal amountHour;
+    private BigDecimal amountHour; //Tăng ca
 
     private String content;
 
