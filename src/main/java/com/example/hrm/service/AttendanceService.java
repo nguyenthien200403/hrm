@@ -41,11 +41,18 @@ public class AttendanceService {
     @Value("${time.threshold}")
     private int timeThreshold;
 
+    @Value("${work.time}")
+    private int WORKTIME;
+
+    @Value("${time.skip}")
+    private int timeSkip;
+
     //Kiểm tra nhân viên đã chấm công - Nếu đã chấm công thì trả về id ngày hôm đó
     @Transactional(readOnly = true)
     public GeneralResponse<?> checkDateWork(String id, LocalDate date){
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         if(dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY){
+
             return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "Weekend - cannot Check-in.", null);
         }
 
@@ -55,10 +62,13 @@ public class AttendanceService {
         LocalTime timeNow = LocalTime.now();
 
         // Lùi giờ bắt đầu về 3 tiếng
-        LocalTime adjustedStartTime = timeTracker.getStartTime().minusHours(3);
+        LocalTime adjustedStartTime = timeTracker.getStartTime().minusHours(timeSkip);
+
+        // Cộng thêm 3 tiếng sau giờ tan ca
+        LocalTime adjustedEndTime = timeTracker.getEndTime().plusHours(timeSkip);
 
         // Kiểm tra ngoài giờ làm (trước adjustedStartTime hoặc sau endTime)
-        if (timeNow.isBefore(adjustedStartTime) || timeNow.isAfter(timeTracker.getEndTime())) {
+        if (timeNow.isBefore(adjustedStartTime) || timeNow.isAfter(adjustedEndTime)) {
             return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "The workday is over", null);
         }
 
@@ -105,21 +115,21 @@ public class AttendanceService {
             return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "You have completed Check-out", null);
         }
 
-        LocalTime end = setTimeEnd(endRequest);
-        attendance.setTimeOut(end);
-        BigDecimal totalTime = totalTime(attendance.getTimeIn(), end);
+
+        attendance.setTimeOut(endRequest);
+        BigDecimal totalTime = totalTime(attendance.getTimeIn(), endRequest);
         attendance.setTotalTime(totalTime);
 
         attendanceRepository.save(attendance);
         return new GeneralResponse<>(HttpStatus.OK.value(), "Check-Out Successful", totalTime);
     }
 
-    private LocalTime setTimeEnd(LocalTime end) {
+    private LocalTime setTimeEnd(LocalTime endRequest) {
         TimeTracker timeTracker = timeTrackerRepository.findById(1L)
                 .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
 
         LocalTime endTracker = timeTracker.getEndTime();
-        return (end.isAfter(endTracker) || end.equals(endTracker)) ? endTracker : end;
+        return endRequest.isAfter(endTracker) ? endTracker : endRequest;
     }
 
 
@@ -149,37 +159,64 @@ public class AttendanceService {
 
     }
 
-    private BigDecimal totalTime(LocalTime start, LocalTime end){
-        if(end == null || start == null){
+    private BigDecimal totalTime(LocalTime start, LocalTime endRequest){
+        if(endRequest == null || start == null){
             return BigDecimal.ZERO;
         }
+
+        LocalTime end = setTimeEnd(endRequest);
+
         long minutes = Duration.between(start, end).toMinutes();
         // Ví dụ: trừ đi 120 phút nghỉ trưa
-        long adjusted = minutes - timeBreak;
-        if(adjusted < 0) adjusted = 0;
+        long adjusted = minutes;
+        if (minutes >= WORKTIME) {
+            adjusted -= timeBreak;
+        }
+        if (adjusted < 0) adjusted = 0;
         return BigDecimal.valueOf(adjusted / 60.0); // giờ dạng thập phân
     }
 
     //AutoCheckout: cron job
-    @Scheduled(cron = "0 0 20 * * MON-FRI") // chạy 20:00 từ thứ 2 đến thứ 6
+    @Scheduled(cron = "0 0 21 * * MON-FRI")
+    @Transactional// chạy 21:00 từ thứ 2 đến thứ 6
     public void autoCheckOut() {
         LocalTime endTime = timeTrackerRepository.findById(1L)
                 .map(TimeTracker::getEndTime)
                 .orElse(LocalTime.of(19,0));
 
-        // Cho phép về sớm 30 phút
-        LocalTime earlyThreshold = endTime.minusMinutes(timeThreshold);
-
         List<Attendance> records = attendanceRepository.findByTimeOutIsNull();
+
         for (Attendance attendance : records) {
             attendance.setTimeOut(endTime);
             attendance.setTotalTime(totalTime(attendance.getTimeIn(), endTime));
+        }
+        attendanceRepository.saveAll(records);
+    }
 
-            // So sánh với earlyThreshold
-            if (attendance.getTimeOut().isBefore(earlyThreshold)) {
-                attendance.setNote("Về sớm");
-            } else {
-                attendance.setNote("Đúng giờ");
+
+    @Scheduled(cron = "0 0 23 * * ?") // chạy mỗi ngày lúc 23h
+    @Transactional
+    public void autoUpdateStatus() {
+        List<Attendance> records = attendanceRepository.findByStatusIsNull();
+        if (records.isEmpty())
+            return;
+        TimeTracker tracker = timeTrackerRepository.findById(1L)
+                .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
+
+        LocalTime shiftStart = tracker.getStartTime();
+        LocalTime shiftEnd = tracker.getEndTime();
+
+        for (Attendance att : records) {
+            if (att.getTimeIn() == null || att.getTimeOut() == null) {
+                att.setStatus("Absent"); // hoặc Missing Punch
+                } else {
+                    boolean late = att.getTimeIn().isAfter(shiftStart.plusMinutes(timeThreshold));
+                    boolean early = att.getTimeOut().isBefore(shiftEnd.minusMinutes(timeThreshold));
+
+                    if (late && early) att.setStatus("Đi trễ & Về sớm");
+                    else if (late) att.setStatus("Đi trễ");
+                    else if (early) att.setStatus("Về sớm");
+                    else att.setStatus("Đúng giờ");
             }
         }
         attendanceRepository.saveAll(records);
@@ -228,10 +265,12 @@ public class AttendanceService {
         LocalDate date = LocalDate.now();
         int mount = date.getMonthValue();
         int year = date.getYear();
+
         List<AttendanceProjection> list = attendanceRepository.findAllByIdEmployeeAndDateWork(id, mount, year);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Working Data for Employee Id: " + id, null);
         }
+
         return new GeneralResponse<>(HttpStatus.OK.value(), "Working data for: " + mount + "/" + year, list);
     }
 

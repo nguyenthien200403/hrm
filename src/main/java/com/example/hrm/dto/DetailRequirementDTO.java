@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetailRequirementDTO {
+    private Long id;
     private String employeeName;
     private String departmentName;
     private String employeeId;
@@ -27,4 +28,5 @@ public class DetailRequirementDTO {
     private Integer amountDate;
     private String content;
     private String note;
+    private String status;
 }

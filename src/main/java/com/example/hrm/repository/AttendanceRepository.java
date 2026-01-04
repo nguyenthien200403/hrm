@@ -17,6 +17,7 @@ import java.util.List;
 public interface AttendanceRepository extends JpaRepository<Attendance, String> {
     List<Attendance> findByTimeOutIsNull();
 
+    List<Attendance> findByStatusIsNull();
 
     @Transactional(readOnly = true)
     @Procedure(procedureName = "sp_FindAllByEmployeeIdAndDateWork")

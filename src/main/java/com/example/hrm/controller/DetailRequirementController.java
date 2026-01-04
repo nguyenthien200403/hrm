@@ -44,29 +44,70 @@ public class DetailRequirementController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/requirements/confirm")
+    @GetMapping("/requirements/approved")
     private ResponseEntity<?> getAllDetailRequirementWithStatusAndDateConfirm(){
         GeneralResponse<?> response = service.getAllDetailRequirementWithStatusAndDateConfirm();
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/personal/requirements-detail/amount")
-    private ResponseEntity<?> amountDetailRequirementByDateAndEmployee(@RequestParam int month, @RequestParam int year){
+    private ResponseEntity<?> getAmountDetailRequirementByDateAndEmployee(@RequestParam int month, @RequestParam int year){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
         String id = account.getEmployee().getId();
-        GeneralResponse<?> response = service.amountDetailRequirementByDateAndEmployee(id, month, year);
+        GeneralResponse<?> response = service.getAmountDetailRequirementByDateAndEmployee(id, month, year);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 
     @GetMapping("/personal/requirements-detail")
-    private ResponseEntity<?> getAllDetailRequirementByEmployee(@RequestParam String status, @RequestParam String nameType,
+    private ResponseEntity<?> getAllDetailRequirementByEmployee(@RequestParam String status, @RequestParam String type,
                                                                 @RequestParam int month, @RequestParam int year){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
         String id = account.getEmployee().getId();
-        GeneralResponse<?> response = service.getAllDetailRequirementByEmployee(id, status, nameType,month, year);
+        GeneralResponse<?> response = service.getAllDetailRequirementByEmployee(id, status, type,month, year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/manager/requirements-detail/amount")
+    private ResponseEntity<?> getAmountDetailRequirementByDateAndManager(@RequestParam int month, @RequestParam int year){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAmountDetailRequirementByDateAndManager(id, month, year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/manager/requirements-detail")
+    private ResponseEntity<?> getAllDetailRequirementByManager(@RequestParam String status, @RequestParam String type,
+                                                                @RequestParam int month, @RequestParam int year){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAllDetailRequirementByManager(id, status, type,month, year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/admin/requirements-detail/amount")
+    private ResponseEntity<?> getAmountDetailRequirementByDateAndAdmin(@RequestParam int month, @RequestParam int year){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAmountDetailRequirementByDateAndAdmin(id, month, year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/admin/requirements-detail")
+    private ResponseEntity<?> getAllDetailRequirementByAdmin(@RequestParam String status, @RequestParam String type,
+                                                               @RequestParam int month, @RequestParam int year){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAllDetailRequirementByAdmin(id, status, type,month, year);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

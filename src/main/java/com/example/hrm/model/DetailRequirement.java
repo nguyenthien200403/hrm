@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class DetailRequirement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_chi_tiet_yeu_cau")
+    @Column(name = "id_chi_tiet")
     private Long id;
 
     @Builder.Default
@@ -48,9 +48,8 @@ public class DetailRequirement {
     @Column(name = "noi_dung")
     private String content;
 
-    @Builder.Default
     @Column(name = "ghi_chu")
-    private String note = "";
+    private String note;
 
     @ManyToOne
     @JoinColumn(name  = "id_nhan_vien")

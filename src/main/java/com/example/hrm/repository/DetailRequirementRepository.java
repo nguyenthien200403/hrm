@@ -9,25 +9,41 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+
 import java.util.Optional;
 
 public interface DetailRequirementRepository extends JpaRepository<DetailRequirement,Long> {
 
     @Transactional(readOnly = true)
     @Procedure(procedureName = "sp_FindAllDetailRequirementWithStatusAndDateConfirm")
-    Optional<DetailRequirementProjection> findAllDetailRequirementWithStatusAndDateConfirm();
+    List<DetailRequirementProjection> findAllDetailRequirementWithStatusAndDateConfirm();
 
-    @Procedure(name = "sp_CountDetailRequirementByDateAndEmployee")
-    Map<String, Object> countDetailRequirementByDateAndEmployee(@Param("employeeId") String employeeId,
-                                                                 @Param("month") int mount,
-                                                                 @Param("year") int year);
+
 
     @Transactional(readOnly = true)
     @Procedure(procedureName = "sp_FindAllDetailRequirementByEmployee")
     List<DetailRequirement> findAllDetailRequirementByEmployee(@Param("employeeId") String id,
                                                   @Param("status") String status,
-                                                  @Param("nameType") String nameType,
+                                                  @Param("nameType") String type,
                                                   @Param("month") int month,
                                                   @Param("year") int year);
+
+
+
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_FindAllDetailRequirementByManager")
+    List<DetailRequirement> findAllDetailRequirementByManager(@Param("employeeId") String id,
+                                                               @Param("status") String status,
+                                                               @Param("nameType") String type,
+                                                               @Param("month") int month,
+                                                               @Param("year") int year);
+
+
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_FindAllDetailRequirementByAdmin")
+    List<DetailRequirement> findAllDetailRequirementByAdmin(@Param("employeeId") String id,
+                                                              @Param("status") String status,
+                                                              @Param("nameType") String type,
+                                                              @Param("month") int month,
+                                                              @Param("year") int year);
 }
