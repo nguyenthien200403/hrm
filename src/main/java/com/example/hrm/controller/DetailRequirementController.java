@@ -111,5 +111,12 @@ public class DetailRequirementController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-
+    @GetMapping("/personal/leave-quota")
+    private ResponseEntity<?> getRemainingStandardLeaveDays(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getRemainingStandardLeaveDays(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 }
