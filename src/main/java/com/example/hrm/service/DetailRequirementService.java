@@ -19,6 +19,7 @@ import jakarta.persistence.ParameterMode;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.StoredProcedureQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,10 +81,14 @@ public class DetailRequirementService {
                 .requirement(requirement)
                 .build();
 
-        repository.save(detailRequirement);
+        try {
+            repository.save(detailRequirement);
+            return new GeneralResponse<>(HttpStatus.CREATED.value(),
+                    "Your request details have been successfully created and submitted", null);
+        } catch (DataAccessException ex) { // Trigger rollback sẽ ném ra lỗi SQL
+             return new GeneralResponse<>(HttpStatus.BAD_REQUEST.value(), "Requested days exceed remaining quota", null);
+        }
 
-        return new GeneralResponse<>(HttpStatus.CREATED.value(),
-                "Your request details have been successfully created and submitted", null);
     }
 
 
@@ -310,5 +315,17 @@ public class DetailRequirementService {
                 .collect(Collectors.toList());
 
         return new GeneralResponse<>(HttpStatus.OK.value(), "List", dto);
+    }
+
+    public GeneralResponse<?> getRemainingStandardLeaveDays(String id){
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not Found Employee with Id: " + id));
+
+        int year = LocalDate.now().getYear();
+
+        int count = repository.countRemainingStandardLeaveDays(id, year);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "The number of days remaining to use standard leave request", count);
+
     }
 }

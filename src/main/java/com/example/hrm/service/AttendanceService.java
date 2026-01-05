@@ -5,10 +5,7 @@ import com.example.hrm.model.Attendance;
 import com.example.hrm.model.Employee;
 import com.example.hrm.model.TimeTracker;
 import com.example.hrm.projection.AttendanceProjection;
-import com.example.hrm.repository.AttendanceRepository;
-import com.example.hrm.repository.EmployeeRepository;
-import com.example.hrm.repository.NetworkRepository;
-import com.example.hrm.repository.TimeTrackerRepository;
+import com.example.hrm.repository.*;
 import com.example.hrm.request.AttendanceRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +31,7 @@ public class AttendanceService {
     private final NetworkRepository networkRepository;
     private final EmployeeRepository employeeRepository;
     private final TimeTrackerRepository timeTrackerRepository;
+    private final DetailRequirementRepository detailRequirementRepository;
 
     @Value("${time.break}")
     private int timeBreak;
@@ -52,8 +50,10 @@ public class AttendanceService {
     public GeneralResponse<?> checkDateWork(String id, LocalDate date){
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         if(dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY){
-
-            return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "Weekend - cannot Check-in.", null);
+            int resultCheck = detailRequirementRepository.checkApprovedOvertime(id, date);
+            if(resultCheck == 0){
+                return new GeneralResponse<>(HttpStatus.FORBIDDEN.value(), "Weekend - cannot Check-in.", null);
+            }
         }
 
         TimeTracker timeTracker = timeTrackerRepository.findById(1L)
@@ -177,49 +177,34 @@ public class AttendanceService {
     }
 
     //AutoCheckout: cron job
-    @Scheduled(cron = "0 0 21 * * MON-FRI")
-    @Transactional// chạy 21:00 từ thứ 2 đến thứ 6
     public void autoCheckOut() {
         LocalTime endTime = timeTrackerRepository.findById(1L)
-                .map(TimeTracker::getEndTime)
-                .orElse(LocalTime.of(19,0));
-
+                .map(TimeTracker::getEndTime) .orElse(LocalTime.of(19,0));
         List<Attendance> records = attendanceRepository.findByTimeOutIsNull();
-
         for (Attendance attendance : records) {
             attendance.setTimeOut(endTime);
             attendance.setTotalTime(totalTime(attendance.getTimeIn(), endTime));
-        }
-        attendanceRepository.saveAll(records);
+        } attendanceRepository.saveAll(records);
     }
 
-
-    @Scheduled(cron = "0 0 23 * * ?") // chạy mỗi ngày lúc 23h
-    @Transactional
     public void autoUpdateStatus() {
         List<Attendance> records = attendanceRepository.findByStatusIsNull();
-        if (records.isEmpty())
-            return;
+        if (records.isEmpty()) return;
         TimeTracker tracker = timeTrackerRepository.findById(1L)
                 .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
-
-        LocalTime shiftStart = tracker.getStartTime();
-        LocalTime shiftEnd = tracker.getEndTime();
-
+        LocalTime shiftStart = tracker.getStartTime(); LocalTime shiftEnd = tracker.getEndTime();
         for (Attendance att : records) {
             if (att.getTimeIn() == null || att.getTimeOut() == null) {
                 att.setStatus("Absent"); // hoặc Missing Punch
-                } else {
-                    boolean late = att.getTimeIn().isAfter(shiftStart.plusMinutes(timeThreshold));
-                    boolean early = att.getTimeOut().isBefore(shiftEnd.minusMinutes(timeThreshold));
-
-                    if (late && early) att.setStatus("Đi trễ & Về sớm");
-                    else if (late) att.setStatus("Đi trễ");
-                    else if (early) att.setStatus("Về sớm");
-                    else att.setStatus("Đúng giờ");
+            } else {
+                boolean late = att.getTimeIn().isAfter(shiftStart.plusMinutes(timeThreshold));
+                boolean early = att.getTimeOut().isBefore(shiftEnd.minusMinutes(timeThreshold));
+                if (late && early) att.setStatus("Đi trễ & Về sớm");
+                else if (late) att.setStatus("Đi trễ");
+                else if (early) att.setStatus("Về sớm");
+                else att.setStatus("Đúng giờ");
             }
-        }
-        attendanceRepository.saveAll(records);
+        } attendanceRepository.saveAll(records);
     }
 
 
