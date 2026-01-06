@@ -22,6 +22,8 @@ public class ContractDTO {
     private BigDecimal salary;
     private LocalDateTime dateSign;
     private String note;
+    private String status;
+    private String embedSrc;
 
 
     public ContractDTO(Contract contract){
@@ -38,6 +40,8 @@ public class ContractDTO {
         this.salary = contract.getSalary();
         this.dateSign = contract.getDateSign();
         this.note = contract.getNote();
+        this.embedSrc = contract.getEmbedSrc();
+        this.status = contract.getStatus();
     }
 
 
