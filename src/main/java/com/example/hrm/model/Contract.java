@@ -18,6 +18,10 @@ public class Contract {
     @Column(name = "id_hop_dong")
     private String id;
 
+    @Builder.Default
+    @Column(name = "ngay_tao")
+    private LocalDate dateCreate = LocalDate.now();
+
     @Column(name = "ngay_bat_dau")
     private LocalDate dateBegin;
 
@@ -38,6 +42,12 @@ public class Contract {
 
     @Column(name = "ghi_chu")
     private String note;
+
+    @Column(name = "embed_src")
+    private String embedSrc;
+
+    @Column(name = "trang_thai")
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "id_nhan_vien")

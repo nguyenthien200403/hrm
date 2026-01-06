@@ -1,16 +1,19 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.docuseal.DocusealApiService;
 import com.example.hrm.model.Account;
 import com.example.hrm.request.ContractRequest;
 import com.example.hrm.service.ContractService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,9 +21,13 @@ public class ContractController {
 
     private final ContractService contractService;
 
+
     @PostMapping("/admin/contracts")
     public ResponseEntity<?> create(@Valid @RequestBody ContractRequest request){
-        GeneralResponse<?> response = contractService.create(request);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String idAdmin = account.getEmployee().getId();
+        GeneralResponse<?> response = contractService.create(idAdmin,request);
 
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -67,7 +74,8 @@ public class ContractController {
 
     @PutMapping("personal/contracts/{id}")
     public ResponseEntity<?> confirmContract(@PathVariable String id){
-        GeneralResponse<?> response = contractService.confirmContract(id);
+        LocalDateTime dateSign = LocalDateTime.now();
+        GeneralResponse<?> response = contractService.confirmContract(id, dateSign);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

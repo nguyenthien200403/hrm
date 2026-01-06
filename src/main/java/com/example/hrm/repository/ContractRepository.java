@@ -57,4 +57,5 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
                             @Param("nameType") String nameTye);
 
 
+    List<Contract> findByStatusIn(List<String> statuses);
 }

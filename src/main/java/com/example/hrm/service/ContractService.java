@@ -1,8 +1,10 @@
 package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.docuseal.DocusealApiService;
 import com.example.hrm.dto.ContractDTO;
 import com.example.hrm.model.Contract;
+import com.example.hrm.docuseal.DocuSeal;
 import com.example.hrm.model.Employee;
 import com.example.hrm.model.TypeContract;
 import com.example.hrm.projection.ContractProjection;
@@ -14,10 +16,11 @@ import com.example.hrm.request.ContractRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
 
 import java.math.BigDecimal;
@@ -25,8 +28,7 @@ import java.math.RoundingMode;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -36,12 +38,15 @@ public class ContractService {
     public final ContractRepository contractRepository;
     public final EmployeeRepository employeeRepository;
     public final TypeContractRepository typeContractRepository;
+    private final DocusealApiService docusealApiService;
 
     @Value("${time.work}")
     private long TimeWork;
 
     @Value("${date.work}")
     private long DateWork;
+
+
 
     public String generalId(String idEmployee){
         String last4Digits = idEmployee.substring(idEmployee.length() - 4);
@@ -50,21 +55,21 @@ public class ContractService {
         return last4Digits + timestamp;
     }
 
-    public GeneralResponse<?> create(ContractRequest request){
+    public GeneralResponse<?> create(String idAdmin, ContractRequest request) {
         Optional<Employee> findEmp = employeeRepository.findById(request.getIdEmployee());
         Optional<TypeContract> findT = typeContractRepository.findByName(request.getNameTypeContract());
 
-        if(findEmp.isEmpty() || findT.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found: {Employee or Contract Type}", null);
+        if (findEmp.isEmpty() || findT.isEmpty()) {
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(),
+                    "Not Found: {Employee or Contract Type}", null);
         }
 
         Employee employee = findEmp.get();
         TypeContract typeContract = findT.get();
 
-        String id = generalId(employee.getId());
+        //String id = generalId(employee.getId());
 
-        var contract = Contract.builder()
-                .id(id)
+        Contract contract = Contract.builder()
                 .dateBegin(request.getDateBegin())
                 .dateEnd(request.getDateEnd())
                 .position(request.getPosition())
@@ -74,14 +79,25 @@ public class ContractService {
                 .employee(employee)
                 .typeContract(typeContract)
                 .build();
-        
 
-        contractRepository.save(contract);
+        DocuSeal docuSeal = docusealApiService.createSubmission(idAdmin, contract);
+
+        if (docuSeal!= null) {
+            contract.setId(docuSeal.getId());
+            contract.setEmbedSrc(docuSeal.getEmbedSrc());
+            contract.setStatus(docuSeal.getStatus());
+
+            contractRepository.save(contract);
+        } else {
+            return new GeneralResponse<>(HttpStatus.BAD_GATEWAY.value(),
+                    "Docuseal API error", null);
+        }
 
         ContractDTO dto = new ContractDTO(contract);
-
         return new GeneralResponse<>(HttpStatus.CREATED.value(), "Success", dto);
     }
+
+
 
     @Transactional(readOnly = true)
     public GeneralResponse<?> getAllContractsByEmployeeId(String id){
@@ -147,13 +163,12 @@ public class ContractService {
         return new GeneralResponse<>(HttpStatus.OK.value(), "Successful Search", list);
     }
 
-    public GeneralResponse<?> confirmContract(String id){
-        Optional<Contract> findResult = contractRepository.findById(id);
-        if(findResult.isEmpty()){
-            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Contract", null);
-        }
+    public void confirm(String id, LocalDateTime dateSign){
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not Found Contract with Id:" + id));
 
-        Contract contract = findResult.get();
+
+
         TypeContract typeContract = contract.getTypeContract();
 
         if(Boolean.TRUE.equals(typeContract.getHasSalary()) && contract.getSalary() != null){
@@ -161,11 +176,15 @@ public class ContractService {
             employee.setWage(calculateWage(contract.getSalary()));
             employeeRepository.save(employee);
         }
-        contract.setDateSign(LocalDateTime.now());
+        contract.setDateSign(dateSign);
+        contract.setStatus("completed");
+
         contractRepository.save(contract);
+    }
 
+    public GeneralResponse<?> confirmContract(String id, LocalDateTime dateSign){
+        confirm(id, dateSign);
         return new GeneralResponse<>(HttpStatus.OK.value(), "Contract Confirmed Successfully", null);
-
     }
 
     private BigDecimal calculateWage(BigDecimal salary){
