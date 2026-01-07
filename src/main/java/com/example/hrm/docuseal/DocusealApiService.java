@@ -42,8 +42,8 @@ public class DocusealApiService {
         return response.getBody();
     }
 
-    public DocuSeal createSubmission(String idAdmin, Contract contract) {
-        Map<String, Object> payload = buildDocusealPayload(idAdmin, contract);
+    public DocuSeal createSubmission(String idAdmin, Contract contract, String generalId) {
+        Map<String, Object> payload = buildDocusealPayload(idAdmin, contract, generalId);
         return callDocusealApi(payload);
     }
 
@@ -67,7 +67,7 @@ public class DocusealApiService {
 
 
 
-    private Map<String, Object> buildDocusealPayload(String idAdmin, Contract contract) {
+    private Map<String, Object> buildDocusealPayload(String idAdmin, Contract contract, String generalId) {
         Employee employee = contract.getEmployee();
 
         Employee admin = employeeRepository.findById(idAdmin)
@@ -83,7 +83,7 @@ public class DocusealApiService {
         Map<String, Object> values = new HashMap<>();
 
         //Tiêu đề
-        values.put("contractId", contract.getId());
+        values.put("contractId", generalId);
         values.put("dateCreate", contract.getDateCreate().toString());
 
         //Bên A
