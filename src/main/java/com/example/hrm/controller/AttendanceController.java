@@ -57,11 +57,11 @@ public class AttendanceController {
 
 
     @GetMapping("/personal/attendances")
-    private ResponseEntity<?> getAllByDateSignAndType(){
+    private ResponseEntity<?> getAllByDateSignAndType(@RequestParam int month, @RequestParam int year){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
         String id = account.getEmployee().getId();
-        GeneralResponse<?> response = service.getAllByIdEmployeeAndDateWork(id);
+        GeneralResponse<?> response = service.getAllByIdEmployeeAndDateWork(id, month, year);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 

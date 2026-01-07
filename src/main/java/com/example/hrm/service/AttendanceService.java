@@ -246,17 +246,14 @@ public class AttendanceService {
 
     //hiển thị danh sách bảng công theo nhân viên và theo tháng
     @Transactional(readOnly = true)
-    public GeneralResponse<?> getAllByIdEmployeeAndDateWork(String id){
-        LocalDate date = LocalDate.now();
-        int mount = date.getMonthValue();
-        int year = date.getYear();
+    public GeneralResponse<?> getAllByIdEmployeeAndDateWork(String id, int month, int year){
 
-        List<AttendanceProjection> list = attendanceRepository.findAllByIdEmployeeAndDateWork(id, mount, year);
+        List<AttendanceProjection> list = attendanceRepository.findAllByIdEmployeeAndDateWork(id, month, year);
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Working Data for Employee Id: " + id, null);
         }
 
-        return new GeneralResponse<>(HttpStatus.OK.value(), "Working data for: " + mount + "/" + year, list);
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Working data for: " + month + "/" + year, list);
     }
 
     //getByIdAndDateWork
