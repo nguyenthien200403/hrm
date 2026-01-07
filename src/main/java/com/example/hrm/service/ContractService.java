@@ -67,7 +67,7 @@ public class ContractService {
         Employee employee = findEmp.get();
         TypeContract typeContract = findT.get();
 
-        //String id = generalId(employee.getId());
+        String generalId = generalId(employee.getId());
 
         Contract contract = Contract.builder()
                 .dateBegin(request.getDateBegin())
@@ -80,7 +80,7 @@ public class ContractService {
                 .typeContract(typeContract)
                 .build();
 
-        DocuSeal docuSeal = docusealApiService.createSubmission(idAdmin, contract);
+        DocuSeal docuSeal = docusealApiService.createSubmission(idAdmin, contract, generalId);
 
         if (docuSeal!= null) {
             contract.setId(docuSeal.getId());
