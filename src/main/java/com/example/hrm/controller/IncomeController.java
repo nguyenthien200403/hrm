@@ -28,8 +28,10 @@ public class IncomeController {
     }
 
     @GetMapping("/admin/incomes")
-    public ResponseEntity<?> getAllIncomeByDepartmentName(@RequestParam String departName){
-        GeneralResponse<?> response = service.getAllIncomeByDepartmentName(departName);
+    public ResponseEntity<?> getAllIncomeByDepartmentName(@RequestParam int month,
+                                                          @RequestParam int year,
+                                                          @RequestParam String departName){
+        GeneralResponse<?> response = service.getAllIncomeByDepartmentName(departName, month, year);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

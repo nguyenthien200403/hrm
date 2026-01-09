@@ -1,6 +1,8 @@
 package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.dto.AttendanceDTO;
+import com.example.hrm.mapper.AttendanceMapper;
 import com.example.hrm.model.Attendance;
 import com.example.hrm.model.Employee;
 import com.example.hrm.model.TimeTracker;
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,6 +35,7 @@ public class AttendanceService {
     private final EmployeeRepository employeeRepository;
     private final TimeTrackerRepository timeTrackerRepository;
     private final DetailRequirementRepository detailRequirementRepository;
+    private final AttendanceMapper attendanceMapper;
 
     @Value("${time.break}")
     private int timeBreak;
@@ -152,7 +156,7 @@ public class AttendanceService {
                 .timeOut(request.getTimeOut())
                 .totalTime(totalTime)
                 .note(request.getNote() == null ? "" : request.getNote())
-                .idEmployee(employee.getId())
+                .employee(employee)
                 .build();
         attendanceRepository.save(attendance);
         return new GeneralResponse<>(HttpStatus.OK.value(), msg, null);
@@ -249,6 +253,7 @@ public class AttendanceService {
     public GeneralResponse<?> getAllByIdEmployeeAndDateWork(String id, int month, int year){
 
         List<AttendanceProjection> list = attendanceRepository.findAllByIdEmployeeAndDateWork(id, month, year);
+
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Working Data for Employee Id: " + id, null);
         }
@@ -263,6 +268,31 @@ public class AttendanceService {
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Working Data for Employee Id: " + id, null);
         }
-        return new GeneralResponse<>(HttpStatus.OK.value(), "Working data for: ", list);
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Working data for: " + id, list);
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public GeneralResponse<?> getAllAttendanceByManager(String id, int month, int year, String employeeName){
+        List<Attendance> list = attendanceRepository.getAllAttendanceByManager(id, month, year, employeeName);
+        if(list.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Working Data for Employee Id: " + id, null);
+        }
+
+        List<AttendanceDTO> dto = list.stream().map(attendanceMapper :: toDTO).toList();
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Working data ", dto);
+    }
+
+
+    @Transactional(readOnly = true)
+    public GeneralResponse<?> getAllAttendanceByAdmin(String id, int month, int year, String employeeName){
+        List<Attendance> list = attendanceRepository.getAllAttendanceByAdmin(id, month, year, employeeName);
+        if(list.isEmpty()){
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Working Data for Employee Id: " + id, null);
+        }
+
+        List<AttendanceDTO> dto = list.stream().map(attendanceMapper :: toDTO).toList();
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Working data ", dto);
     }
 }

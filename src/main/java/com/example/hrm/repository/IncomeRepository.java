@@ -20,5 +20,7 @@ public interface IncomeRepository extends JpaRepository<Income, String> {
 
     @Transactional
     @Procedure(procedureName = "sp_FindAllIncomeByDepartmentName")
-    List<Income> findAllByDepartmentName(@Param("departmentName")String nameDepart);
+    List<Income> findAllByDepartmentName(@Param("departmentName")String nameDepart,
+                                         @Param("month") int month,
+                                         @Param("year")int year);
 }

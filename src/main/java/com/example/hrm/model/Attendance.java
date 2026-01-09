@@ -1,10 +1,7 @@
 package com.example.hrm.model;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,7 +40,8 @@ public class Attendance {
     @Column(name = "trang_thai")
     private String status;
 
-    @Column(name = "id_nhan_vien")
-    private String idEmployee;
+    @ManyToOne
+    @JoinColumn(name = "id_nhan_vien")
+    private Employee employee;
 
 }
