@@ -2,6 +2,7 @@ package com.example.hrm.service;
 
 import com.example.hrm.config.GeneralResponse;
 import com.example.hrm.dto.AttendanceDTO;
+import com.example.hrm.dto.CountAttendanceDTO;
 import com.example.hrm.mapper.AttendanceMapper;
 import com.example.hrm.model.Attendance;
 import com.example.hrm.model.Employee;
@@ -196,7 +197,8 @@ public class AttendanceService {
         if (records.isEmpty()) return;
         TimeTracker tracker = timeTrackerRepository.findById(1L)
                 .orElseThrow(() -> new IllegalStateException("TimeTracker not found"));
-        LocalTime shiftStart = tracker.getStartTime(); LocalTime shiftEnd = tracker.getEndTime();
+        LocalTime shiftStart = tracker.getStartTime();
+        LocalTime shiftEnd = tracker.getEndTime();
         for (Attendance att : records) {
             if (att.getTimeIn() == null || att.getTimeOut() == null) {
                 att.setStatus("Absent"); // hoặc Missing Punch
@@ -240,13 +242,38 @@ public class AttendanceService {
         return new GeneralResponse<>(HttpStatus.OK.value(), "Amount Attendances", amount);
     }
 
+    //Đếm số lượng nhân viên đi trễ
     public GeneralResponse<?> countLateAttendancesByDateWork(){
         LocalDate date = LocalDate.now();
-        int amount = attendanceRepository.countLateAttendancesByDateWork(date);
+        int amount = attendanceRepository.countLateAttendancesByDateWork(date, timeThreshold);
         return new GeneralResponse<>(HttpStatus.OK.value(), "Amount Late Attendances", amount);
     }
 
-    //Đếm số lượng nhân viên đi trễ
+    public GeneralResponse<?> countAttendancesByAdmin(){
+        LocalDate date = LocalDate.now();
+        int work = attendanceRepository.countAttendancesByDateWork(date);
+        int late = attendanceRepository.countLateAttendancesByDateWork(date, timeThreshold);
+
+        CountAttendanceDTO dto = new CountAttendanceDTO(work, late);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Amount Attendances", dto);
+    }
+
+
+    public GeneralResponse<?> countAttendancesByManager(String employeeId){
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Not Found Employee with Id: " + employeeId));
+
+        String departId = employee.getDepartment().getId();
+        LocalDate date = LocalDate.now();
+        int work = attendanceRepository.countWorkingByDateManager(date, departId);
+        int late = attendanceRepository.countLateAttendancesByDateManager(date, timeThreshold, departId);
+
+        CountAttendanceDTO dto = new CountAttendanceDTO(work, late);
+
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Amount Attendances by " + date, dto);
+    }
+
 
     //hiển thị danh sách bảng công theo nhân viên và theo tháng
     @Transactional(readOnly = true)
@@ -295,4 +322,7 @@ public class AttendanceService {
         List<AttendanceDTO> dto = list.stream().map(attendanceMapper :: toDTO).toList();
         return new GeneralResponse<>(HttpStatus.OK.value(), "Working data ", dto);
     }
+
+
+
 }

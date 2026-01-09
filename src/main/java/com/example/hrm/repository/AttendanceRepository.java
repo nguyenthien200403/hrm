@@ -33,8 +33,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
     @Query(value = "SELECT dbo.CountWorkingByDate(:workDate)", nativeQuery = true)
     int countAttendancesByDateWork(@Param("workDate") LocalDate date);
 
-    @Query(value = "SELECT  dbo.CountLateAttendancesByDateWork(:workDate)", nativeQuery = true)
-    int countLateAttendancesByDateWork(@Param("workDate") LocalDate date);
+    @Query(value = "SELECT  dbo.CountLateAttendancesByDateWork(:workDate, :graceMinutes)", nativeQuery = true)
+    int countLateAttendancesByDateWork(@Param("workDate") LocalDate date,
+                                       @Param("graceMinutes") int timeThreshold);
 
 
 
@@ -51,5 +52,18 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
                                                @Param("month") int month,
                                                @Param("year") int year,
                                                @Param("employeeName") String employeeName);
+
+
+
+    @Query(value = "SELECT dbo.CountWorkingByDateManager(:workDate, :departmentId)", nativeQuery = true)
+    int countWorkingByDateManager(@Param("workDate") LocalDate date,
+                                  @Param("departmentId") String departmentId);
+
+    @Query(value = "SELECT dbo.CountLateAttendancesByDateManager(:workDate, :graceMinutes, :departmentId)", nativeQuery = true)
+    int countLateAttendancesByDateManager(@Param("workDate") LocalDate date,
+                                          @Param("graceMinutes") int timeThreshold,
+                                          @Param("departmentId") String departmentId);
+
+
 
 }

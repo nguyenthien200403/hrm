@@ -111,5 +111,20 @@ public class AttendanceController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/manager/attendances/count")
+    private ResponseEntity<?> countAttendancesByManager(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.countAttendancesByManager(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/admin/attendances/count")
+    private ResponseEntity<?> countAttendancesAdmin(){
+        GeneralResponse<?> response = service.countAttendancesByAdmin();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
 }

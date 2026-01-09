@@ -102,4 +102,25 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+
+    @GetMapping("/manager/employees/name")
+    public ResponseEntity<?> getAllEmployeeByDepartmentId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+
+        GeneralResponse<?> response = employeeService.getAllEmployeeByDepartmentId(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/admin/employees/name")
+    public ResponseEntity<?> getAllEmployeeByAdmin(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+
+        GeneralResponse<?> response = employeeService.getAllEmployeeByAdmin(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 }

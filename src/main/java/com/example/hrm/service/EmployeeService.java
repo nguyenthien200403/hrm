@@ -5,6 +5,7 @@ import com.example.hrm.dto.*;
 import com.example.hrm.model.*;
 
 import com.example.hrm.mapper.EmployeeMapper;
+import com.example.hrm.projection.BasicInfoProjection;
 import com.example.hrm.projection.EmployeeProjection;
 import com.example.hrm.repository.*;
 import com.example.hrm.request.EmployeeRequest;
@@ -350,4 +351,28 @@ public class EmployeeService {
         return new GeneralResponse<>(HttpStatus.OK.value(),"Successful Update ", employeeMapper.toDto(saved));
     }
 
+
+
+    public GeneralResponse<?> getAllEmployeeByDepartmentId(String employeeId){
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Not Found Employee with Id: " + employeeId));
+
+        List<BasicInfoProjection> list = employeeRepository.findAllEmployeeNameByManager(employeeId);
+        if(list.isEmpty()) {
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Employee Name with DepartmentId: " + employee.getDepartment().getId(), list);
+    }
+
+
+    public GeneralResponse<?> getAllEmployeeByAdmin(String employeeId){
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Not Found Employee with Id: " + employeeId));
+
+        List<BasicInfoProjection> list = employeeRepository.findAllEmployeeNameByAdmin(employeeId);
+        if(list.isEmpty()) {
+            return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
+        }
+        return new GeneralResponse<>(HttpStatus.OK.value(), "Employee Name with DepartmentId: " + employee.getDepartment().getId(), list);
+    }
 }
