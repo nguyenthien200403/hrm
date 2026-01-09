@@ -1,9 +1,6 @@
 package com.example.hrm.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,10 +20,10 @@ public class Income {
     private String id;
 
     @Column(name = "thang")
-    private LocalDate month;
+    private int month;
 
     @Column(name ="nam")
-    private LocalDate year;
+    private int year;
 
     @Column(name ="ngay_tao")
     private LocalDateTime dateCreate;
@@ -48,6 +45,10 @@ public class Income {
 
     @Column(name = "thuc_lanh")
     private BigDecimal totalSalary;
+
+    @ManyToOne
+    @JoinColumn(name = "id_nhan_vien")
+    private Employee employee;
 
     @Override
     public String toString() {
