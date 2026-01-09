@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -57,7 +56,7 @@ public class AttendanceController {
 
 
     @GetMapping("/personal/attendances")
-    private ResponseEntity<?> getAllByDateSignAndType(@RequestParam int month, @RequestParam int year){
+    private ResponseEntity<?> getAllByIdEmployeeAndDateWork(@RequestParam int month, @RequestParam int year){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
         String id = account.getEmployee().getId();
@@ -65,8 +64,8 @@ public class AttendanceController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @GetMapping("/admin/attendances")
-    private ResponseEntity<?> searchByDateSignAndType(@RequestParam String id, @RequestParam LocalDate date){
+    @GetMapping("/admin/attendances/search")
+    private ResponseEntity<?> searchByIdEmployeeAndDateWork(@RequestParam String id, @RequestParam LocalDate date){
         GeneralResponse<?> response = service.searchByIdEmployeeAndDateWork(id, date);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -88,4 +87,29 @@ public class AttendanceController {
         GeneralResponse<?> response = service.countLateAttendancesByDateWork();
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @GetMapping("/admin/attendances")
+    private ResponseEntity<?> getAllAttendanceByAdmin(@RequestParam int month,
+                                                      @RequestParam int year,
+                                                      @RequestParam String employeeName){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAllAttendanceByAdmin(id, month, year, employeeName);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
+    @GetMapping("/manager/attendances")
+    private ResponseEntity<?> getAllAttendanceByManager(@RequestParam int month,
+                                                      @RequestParam int year,
+                                                      @RequestParam String employeeName){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+        GeneralResponse<?> response = service.getAllAttendanceByManager(id, month, year, employeeName);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
 }

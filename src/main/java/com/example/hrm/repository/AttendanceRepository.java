@@ -35,4 +35,21 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
 
     @Query(value = "SELECT  dbo.CountLateAttendancesByDateWork(:workDate)", nativeQuery = true)
     int countLateAttendancesByDateWork(@Param("workDate") LocalDate date);
+
+
+
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_FindAllAttendanceByManager")
+    List<Attendance> getAllAttendanceByManager(@Param("managerId") String id,
+                                                         @Param("month") int month,
+                                                         @Param("year") int year,
+                                                         @Param("employeeName") String employeeName);
+
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_FindAllAttendanceByAdmin")
+    List<Attendance> getAllAttendanceByAdmin(@Param("adminId") String id,
+                                               @Param("month") int month,
+                                               @Param("year") int year,
+                                               @Param("employeeName") String employeeName);
+
 }

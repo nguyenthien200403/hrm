@@ -1,11 +1,14 @@
 package com.example.hrm.controller;
 
 import com.example.hrm.config.GeneralResponse;
+import com.example.hrm.model.Account;
 import com.example.hrm.request.DepartmentRequest;
 import com.example.hrm.service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,4 +41,14 @@ public class DepartmentController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+
+    @GetMapping("/manager/departments")
+    public ResponseEntity<?> getDepartmentByEmployeeId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+
+        GeneralResponse<?> response = departmentService.getDepartmentByEmployeeId(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 }

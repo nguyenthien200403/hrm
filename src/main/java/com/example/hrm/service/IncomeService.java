@@ -46,8 +46,8 @@ public class IncomeService {
     }
 
     @Transactional(readOnly = true)
-    public GeneralResponse<?> getAllIncomeByDepartmentName(String departName){
-        List<Income> list = repository.findAllByDepartmentName(departName);
+    public GeneralResponse<?> getAllIncomeByDepartmentName(String departName, int month, int year){
+        List<Income> list = repository.findAllByDepartmentName(departName, month, year);
 
         if(list.isEmpty()){
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
