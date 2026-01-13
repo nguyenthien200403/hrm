@@ -31,6 +31,12 @@ public class EmployeeController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/manager/employees/{id}")
+    public ResponseEntity<?> showDetailManagerByID(@PathVariable String id){
+        GeneralResponse<?> response = employeeService.getEmployeeManagerById(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @PutMapping("/admin/verifications/{id}")
     public ResponseEntity<?> verifyEmployee(@PathVariable String id, @RequestParam String nameDepart){
         GeneralResponse<?> response = employeeService.verifyEmployee(id, nameDepart);
@@ -104,7 +110,7 @@ public class EmployeeController {
 
 
     @GetMapping("/manager/employees/name")
-    public ResponseEntity<?> getAllEmployeeByDepartmentId(){
+    public ResponseEntity<?> getAllEmployeeByManager(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account) authentication.getPrincipal();
         String id = account.getEmployee().getId();
@@ -123,4 +129,17 @@ public class EmployeeController {
         GeneralResponse<?> response = employeeService.getAllEmployeeByAdmin(id);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+
+    @GetMapping("/manager/employees")
+    public ResponseEntity<?> getEmployeeByManager(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account) authentication.getPrincipal();
+        String id = account.getEmployee().getId();
+
+        GeneralResponse<?> response = employeeService.getEmployeeByManager(id);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+
 }

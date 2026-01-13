@@ -49,11 +49,11 @@ public interface DetailRequirementRepository extends JpaRepository<DetailRequire
                                                               @Param("year") int year);
 
 
-    @Query(value = "SELECT fn_CheckApprovedOvertimeOnHoliday(:employeeId, :checkDate)", nativeQuery = true)
+    @Query(value = "SELECT dbo.fn_CheckApprovedOvertimeOnHoliday(:employeeId, :checkDate)", nativeQuery = true)
     int checkApprovedOvertime(@Param("employeeId") String employeeId,
                               @Param("checkDate") LocalDate checkDate);
 
-    @Query(value = "SELECT fn_CheckApprovedOvertimeOnHoliday(:employeeId, :year)", nativeQuery = true)
+    @Query(value = "SELECT dbo.CountRemainingStandardLeaveDays(:employeeId, :year)", nativeQuery = true)
     int countRemainingStandardLeaveDays(@Param("employeeId") String employeeId,
                                         @Param("year") int year);
 }
