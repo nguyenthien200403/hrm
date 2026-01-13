@@ -3,6 +3,7 @@ package com.example.hrm.repository;
 import com.example.hrm.model.Employee;
 
 import com.example.hrm.projection.BasicInfoProjection;
+import com.example.hrm.projection.EmployeeManagerProjection;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -74,5 +75,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 //    List<EmployeeProjection> searchEmployeesBy(@Param("keyword") String keyword,
 //                                               @Param("name") String name,
 //                                               @Param("status") String status);
+
+    @Transactional(readOnly = true)
+    @Procedure(procedureName = "sp_findEmployeeByManager")
+    List<EmployeeManagerProjection> findEmployeeByManager(@Param("managerId") String employeeId);
 
 }
