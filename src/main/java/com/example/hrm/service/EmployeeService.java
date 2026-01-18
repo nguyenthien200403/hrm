@@ -43,7 +43,7 @@ public class EmployeeService {
     private final ContractRepository contractRepository;
     private final EmployeeMapper employeeMapper;
     private final EmailService emailService;
-    private final EmployeeManagerMapper employeeManagerMapper;
+    //private final EmployeeManagerMapper employeeManagerMapper;
 
 
     public GeneralResponse<?> getEmployeeById(String id){
@@ -58,7 +58,7 @@ public class EmployeeService {
     public GeneralResponse<?> getEmployeeManagerById(String id){
         Optional<Employee> findResult = employeeRepository.findById(id);
         if(findResult.isPresent()){
-            EmployeeManagerDTO dto = employeeManagerMapper.toDto(findResult.get());
+            EmployeeManagerDTO dto = employeeMapper.toManager(findResult.get());
             return new GeneralResponse<>(HttpStatus.OK.value(), "Detail Employee with Id: " + id, dto);
         }
         return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Not Found Employee with Id: " + id, null);
@@ -394,7 +394,7 @@ public class EmployeeService {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Not Found Employee with Id: " + employeeId));
 
-        List<EmployeeManagerProjection> list = employeeRepository.findEmployeeByManager(employeeId);
+        List<EmployeeProjection> list = employeeRepository.findEmployeeByManager(employeeId);
         if(list.isEmpty()) {
             return new GeneralResponse<>(HttpStatus.NOT_FOUND.value(), "Empty", null);
         }
