@@ -15,6 +15,10 @@ public interface EmployeeMapper {
 
     //Employee toEntity(EmployeeDTO dto);
 
+    @Mapping(target = "position", expression = "java(getPosition(employee))")
+    EmployeeManagerDTO toManager(Employee employee);
+
+
     default String getPosition(Employee employee){
         return employee.getContracts().stream()
                 .sorted()

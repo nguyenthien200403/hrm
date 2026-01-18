@@ -78,6 +78,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @Transactional(readOnly = true)
     @Procedure(procedureName = "sp_findEmployeeByManager")
-    List<EmployeeManagerProjection> findEmployeeByManager(@Param("managerId") String employeeId);
+    List<EmployeeProjection> findEmployeeByManager(@Param("managerId") String employeeId);
 
 }
