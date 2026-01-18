@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.Comparator;
+
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper {
     @Mapping(target = "nameDepart", source = "department.name")
@@ -19,11 +21,20 @@ public interface EmployeeMapper {
     EmployeeManagerDTO toManager(Employee employee);
 
 
+//    default String getPosition(Employee employee){
+//        return employee.getContracts().stream()
+//                .sorted()
+//                .findFirst()
+//                .map(Contract :: getPosition)
+//                .orElse(null);
+//    }
+
     default String getPosition(Employee employee){
-        return employee.getContracts().stream()
-                .sorted()
-                .findFirst()
-                .map(Contract :: getPosition)
+        // mới nhất lên đầu
+        return employee.getContracts()
+                .stream()
+                .max(Comparator.comparing(Contract::getDateBegin))
+                .map(Contract::getPosition)
                 .orElse(null);
     }
 
